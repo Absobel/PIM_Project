@@ -1,12 +1,10 @@
 with Ada.Unchecked_Deallocation;
+with exceptions; use exceptions;
 
 package body Liste_Chainee is
 
-    IndexOutofRange : exception;
-    DonneeManquante : exception;
-
 	procedure Free is
-		new Ada.Unchecked_Deallocation (T_Cellule, T_Pile);
+		new Ada.Unchecked_Deallocation (T_Cellule, T_Liste_Chainee);
 
     procedure Initialiser(Liste: in out T_Liste_Chainee) is
     begin
@@ -17,7 +15,7 @@ package body Liste_Chainee is
         Cpt: Integer := 0;
         Aux: T_Liste_Chainee := Liste;
     begin
-        while Liste /= null loop
+        while Aux /= null loop
             Cpt := Cpt + 1;
             Aux := Aux.all.Suivant;
         end loop;
@@ -25,7 +23,7 @@ package body Liste_Chainee is
     end Taille;
 
     procedure Ajouter(Liste: in out T_Liste_Chainee; Donnee: in T_Donnee) is
-        Nouveau: T_Cellule;
+        Nouveau: T_Liste_Chainee;
     begin
         while Liste /= null loop
             Liste := Liste.all.Suivant;
@@ -35,7 +33,7 @@ package body Liste_Chainee is
     end;
 
     procedure AjouterApres(Liste: in out T_Liste_Chainee; Donnee: in T_Donnee; Index: in Integer) is
-        Nouveau: T_Cellule;
+        Nouveau: T_Liste_Chainee;
         Aux: T_Liste_Chainee := Liste;
     begin
         if Index >= Taille(Liste) then
@@ -85,11 +83,11 @@ package body Liste_Chainee is
         Aux: T_Liste_Chainee := Liste;
         Cpt: Integer := 0;
     begin
-        while Aux /= null or Aux.all.Donnee /= Donnee loop
+        while Aux /= null or else Aux.all.Donnee /= Donnee loop
             Aux := Aux.all.Suivant;
             Cpt := Cpt+1;
         end loop;
-        if Aux.all.Suivant = null then
+        if Aux = null then
             raise DonneeManquante;
         else
             return Cpt;
@@ -99,10 +97,10 @@ package body Liste_Chainee is
     function  EstDans(Liste: T_Liste_Chainee; Donnee: T_Donnee) return Boolean is
         Aux: T_Liste_Chainee := Liste;
     begin
-        while Aux /= null or Aux.all.Donnee /= Donnee loop
+        while Aux /= null or else Aux.all.Donnee /= Donnee loop
             Aux := Aux.all.Suivant;
         end loop;
-        if Aux.all.Suivant = null then
+        if Aux = null then
             return false;
         else
             return true;

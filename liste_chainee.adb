@@ -83,7 +83,7 @@ package body Liste_Chainee is
         Aux: T_Liste_Chainee := Liste;
         Cpt: Integer := 0;
     begin
-        while Aux /= null or else Aux.all.Donnee /= Donnee loop
+        while Aux /= null and then Aux.all.Donnee /= Donnee loop
             Aux := Aux.all.Suivant;
             Cpt := Cpt+1;
         end loop;

@@ -57,5 +57,5 @@ begin
 
     Detruire(Liste);
 
-    Put_Line("\nFin des tests : OK");
+    New_Line;Put_Line("Fin des tests : OK");
 end;

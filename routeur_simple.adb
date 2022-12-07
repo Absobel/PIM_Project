@@ -99,6 +99,8 @@ procedure routeur_simple is
 
 begin
     Argument_Parsing(Argument_Count, Cache_Size, Policy, Stat, Table_File, Packet_File, Result_File);
+    
+    -- DEBUG
     Put_Line("Cache_Size : " & Integer'Image(Cache_Size));
     Put_Line("Policy : " & To_String(Policy));
     Put_Line("Stat : " & Boolean'Image(Stat));

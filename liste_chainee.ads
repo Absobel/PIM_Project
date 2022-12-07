@@ -6,6 +6,7 @@ package Liste_Chainee is
     type T_Liste_Chainee is access T_Cellule;
     type T_Cellule is private;
 
+    -- Faudrait rajouter les postconditions ig
     procedure Initialiser(Liste: in out T_Liste_Chainee);
     function  Taille(Liste: T_Liste_Chainee) return Integer;
     procedure Ajouter(Liste: in out T_Liste_Chainee; Donnee: in T_Donnee);

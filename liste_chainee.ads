@@ -16,6 +16,9 @@ package Liste_Chainee is
     function  IndexDe(Liste: T_Liste_Chainee; Donnee: T_Donnee) return Integer;
     function  EstDans(Liste: T_Liste_Chainee; Donnee: T_Donnee) return Boolean;
     procedure Detruire(Liste : in out T_Liste_Chainee);
+    generic
+		with procedure Traiter (Donnee: in T_Donnee);
+	procedure Pour_Chaque(Liste : in T_Liste_Chainee);
 
 private
 

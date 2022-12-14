@@ -1,4 +1,6 @@
 with Ada.Unchecked_Deallocation;
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with exceptions; use exceptions;
 
 package body Liste_Chainee is
@@ -114,6 +116,21 @@ package body Liste_Chainee is
             Liste := Liste.all.Suivant;
             Free(Aux);
             Aux := Liste;
+        end loop;
+    end;
+
+    procedure Pour_Chaque(Liste : in T_Liste_Chainee) is
+        Aux: T_Liste_Chainee := Liste;
+        Cpt : Integer := 0;
+    begin
+        while Aux /= null loop
+            begin
+                Traiter(Aux.all.Donnee);
+            exception
+                when others => Put_Line("Erreur de traiteemnt de la donnee d'indice : " & Integer'Image(Cpt));
+            end;
+            Aux := Aux.all.Suivant;
+            Cpt := Cpt + 1;
         end loop;
     end;
 

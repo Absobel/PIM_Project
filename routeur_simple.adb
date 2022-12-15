@@ -33,6 +33,7 @@ procedure routeur_simple is
         Put_Line("  -r <fichier> : Définir le nom du fichier contenant les résultats (adresse IP destination du paquet et inter-face utilisée). Par défaut, on utilise le fichier resultats.txt.");
     end;
 
+<<<<<<< HEAD
     --traiter les commandes du fichier de paquetage 
     procedure paquetage is
       Fichier_paquets: File_Type;
@@ -70,6 +71,42 @@ procedure routeur_simple is
    close(Fichier_paquets);
    end paquetage;     
 		    	    
+=======
+
+    procedure paquetage is
+	    Entree:File_Type;
+	    sortie:File_Type;
+	    Nom_sortie: Unbounded_string;
+	    Nom_entree: Unbounded_string;
+	    texte: unbounded_String;
+	    trouve: Boolean;
+	    Numero_Ligne: Integer;
+
+    --traiter les commandes du fichier de paquetage
+    create(Sortie,Out_File,To_string(Nom_sortie));
+    Open(Entree,In_File,To_string(Nom_entree));
+    Open(Sortie,Out_File,To_string(fichier_sortie));
+    while not End_Of_File(Entree) and then texte/="fin" loop
+	    Numero_ligne:=Integer(Line(entree));
+	    get(Entree,valeur);
+	    texte:=Get_line(Entree);
+	    trim(texte,both)
+	    if texte="table" then
+		    afficher(table : in T_tab );
+	    else if texte:="Cache" then
+		    --afficher le cache
+            else if texte:= "stat"
+		    --afficher les stat
+	    else
+		    if trouve then
+			    --afficher la destination et l'interface
+		    else
+			    --enregistrer le chemin dans le cache
+	    close(Sortie)
+	    close(Entree)
+
+
+>>>>>>> a6cd1a22129472490a9fb92f8a528df0a546eb18
 
 
 
@@ -231,6 +268,11 @@ procedure routeur_simple is
         Ajouter(Table, Ligne_Table);
       exit when End_Of_File(Fichier_Table);
       end loop;
+      exception
+        when End_Error =>
+          Put ("Blancs en surplus à la fin du fichier.");
+          null;
+      end;
     end Initialiser_Table;
 
 

@@ -33,6 +33,45 @@ procedure routeur_simple is
         Put_Line("  -r <fichier> : Définir le nom du fichier contenant les résultats (adresse IP destination du paquet et inter-face utilisée). Par défaut, on utilise le fichier resultats.txt.");
     end;
 
+<<<<<<< HEAD
+    --traiter les commandes du fichier de paquetage 
+    procedure paquetage is
+      Fichier_paquets: File_Type;
+      Fichier_resultats:File_Type;
+      Fichier_table: File_Type;
+      Nom_Fichier_resultats: Unbounded_string;
+      Nom_Fichier_paquets: Unbounded_string;
+      Nom_Fichier_Table: Unbounded_string;
+      commande: unbounded_String;
+      Numero_Ligne: Integer;
+      Table: T_Liste_chainee;
+      adresse: T_Adresse_Ip;
+      A_Fini: Boolean;
+   begin
+    create(Fichier_resultats,Out_File,To_string(Nom_ Fichier_resultats));
+    Open(Fichier_paquets,In_File,To_string(Nom_ Fichier_paquets));
+    Open(Fichier_resultats,Out_File,To_string(Nom_Fichier_resultats));
+    Open(Fichier_Table,In_File,To_ String(Nom_Fichier_Table)
+    initialiser(Table, Fichier_Table); 
+    close(Fichier_Table);
+    while not End_Of_File(Entree) and then A_Fini loop
+         Numero_ligne:=Integer(Line(Fichier_paquets));
+         Transform_Ip(Fichier_Table);
+         exception
+         when   ==> 
+	     commande:=Get_line(Fichier_paquets);
+	     trim(texte,both);
+         if commande="table" then
+            Afficher_Table(Table,Numero_ligne);
+         else if commnade="fin"
+           A_Fini:= true;   
+         end if;
+    end loop;    
+   close(Fichier_resultats;)
+   close(Fichier_paquets);
+   end paquetage;     
+		    	    
+=======
 
     procedure paquetage is
 	    Entree:File_Type;
@@ -67,6 +106,7 @@ procedure routeur_simple is
 	    close(Entree)
 
 
+>>>>>>> a6cd1a22129472490a9fb92f8a528df0a546eb18
 
 
 
@@ -181,7 +221,7 @@ procedure routeur_simple is
       Afficher_IP(Ligne.Masque);
       Put(To_String(Ligne.Destination));
       New_Line;
-    end Afficher_Ligne;
+    end Affinitialiser(Table, Fichier_Table);icher_Ligne;
 
     procedure Afficher_Table (Table : T_LCA ; Numero_Ligne : Integer) is
       procedure Afficher_Table_Ligne is new Pour_Chaque(Traiter => Afficher_Ligne);

@@ -3,4 +3,5 @@ package exceptions is
     DonneeManquante : exception;
     CommandeInvalide : exception;
     ErreurFormat : exception;
+    Cle_Absente_Exception : exception;
 end exceptions;

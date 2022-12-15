@@ -3,7 +3,7 @@ with Ada.Text_IO;      use Ada.Text_IO;
 with Ada.Integer_Text_IO;    use Ada.Integer_Text_IO;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with exceptions; use exceptions;
-with liste_chainee;
+with LCA;
 with Ada.Strings;               use Ada.Strings;
 with Ada.Text_IO.Unbounded_IO;  use Ada.Text_IO.Unbounded_IO;
 
@@ -17,7 +17,7 @@ procedure routeur_simple is
       Destination : Unbounded_String;
     end record;
 
-    Package Liste_Table is new liste_chainee(T_Ligne_table);
+    Package Liste_Table is new LCA(T_Ligne_table);
     use Liste_Table;
 
     procedure Usage is
@@ -143,7 +143,7 @@ procedure routeur_simple is
     end;
 
 
-    function Comparer_table(Table : T_Liste_Chainee ; Adresse : T_Adresse_IP) return Unbounded_String is
+    function Comparer_table(Table : T_LCA ; Adresse : T_Adresse_IP) return Unbounded_String is
       Adresse_Masquee : T_Adresse_IP;
       Masque_Max : T_Adresse_IP := 0;
       Interface_Sortie : Unbounded_String;
@@ -183,7 +183,7 @@ procedure routeur_simple is
       New_Line;
     end Afficher_Ligne;
 
-    procedure Afficher_Table (Table : T_Liste_Chainee ; Numero_Ligne : Integer) is
+    procedure Afficher_Table (Table : T_LCA ; Numero_Ligne : Integer) is
       procedure Afficher_Table_Ligne is new Pour_Chaque(Traiter => Afficher_Ligne);
     begin
       Put("table : (ligne ");
@@ -212,7 +212,7 @@ procedure routeur_simple is
       return Adresse;
     end Transforme_Ip;
 
-    procedure Initialiser_Table(Table : in out T_Liste_Chainee ; Fichier_Table : in File_Type ) is
+    procedure Initialiser_Table(Table : in out T_LCA ; Fichier_Table : in File_Type ) is
       Adresse : T_Adresse_IP;
       Masque : T_Adresse_IP;
       Destination : Unbounded_String;
@@ -242,7 +242,7 @@ procedure routeur_simple is
     Nom_Fichier_Table : Unbounded_String := To_Unbounded_String("");
     Nom_Fichier_Paquets : Unbounded_String := To_Unbounded_String("");
     Nom_Fichier_Resultats : Unbounded_String := To_Unbounded_String("");
-    Table : T_Liste_Chainee;
+    Table : T_LCA;
 
 begin
     Argument_Parsing(Argument_Count, Cache_Size, Policy, Stat, Nom_Fichier_Table, Nom_Fichier_Paquets, Nom_Fichier_Resultats);

@@ -33,39 +33,42 @@ procedure routeur_simple is
         Put_Line("  -r <fichier> : Définir le nom du fichier contenant les résultats (adresse IP destination du paquet et inter-face utilisée). Par défaut, on utilise le fichier resultats.txt.");
     end;
 
-
-    procedure paquetage is
-	    Entree:File_Type;
-	    sortie:File_Type;
-	    Nom_sortie: Unbounded_string;
-	    Nom_entree: Unbounded_string;
-	    texte: unbounded_String;
-	    trouve: Boolean;
-	    Numero_Ligne: Integer;
-
     --traiter les commandes du fichier de paquetage 
-    create(Sortie,Out_File,To_string(Nom_sortie));
-    Open(Entree,In_File,To_string(Nom_entree));
-    Open(Sortie,Out_File,To_string(fichier_sortie));
-    while not End_Of_File(Entree) and then texte/="fin" loop
-	    Numero_ligne:=Integer(Line(entree));
-	    get(Entree,valeur);
-	    texte:=Get_line(Entree);
-	    trim(texte,both)
-	    if texte="table" then
-		    afficher(table : in T_tab );
-	    else if texte:="Cache" then 
-		    --afficher le cache 
-            else if texte:= "stat"
-		    --afficher les stat 
-	    else
-		    if trouve then 
-			    --afficher la destination et l'interface
-		    else 
-			    --enregistrer le chemin dans le cache
-	    close(Sortie)
-	    close(Entree)
-		    
+    procedure paquetage is
+      Fichier_paquets: File_Type;
+      Fichier_resultats:File_Type;
+      Fichier_table: File_Type;
+      Nom_Fichier_resultats: Unbounded_string;
+      Nom_Fichier_paquets: Unbounded_string;
+      Nom_Fichier_Table: Unbounded_string;
+      commande: unbounded_String;
+      Numero_Ligne: Integer;
+      Table: T_Liste_chainee;
+      adresse: T_Adresse_Ip;
+      A_Fini: Boolean;
+   begin
+    create(Fichier_resultats,Out_File,To_string(Nom_ Fichier_resultats));
+    Open(Fichier_paquets,In_File,To_string(Nom_ Fichier_paquets));
+    Open(Fichier_resultats,Out_File,To_string(Nom_Fichier_resultats));
+    Open(Fichier_Table,In_File,To_ String(Nom_Fichier_Table)
+    initialiser(Table, Fichier_Table); 
+    close(Fichier_Table);
+    while not End_Of_File(Entree) and then A_Fini loop
+         Numero_ligne:=Integer(Line(Fichier_paquets));
+         Transform_Ip(Fichier_Table);
+         exception
+         when   ==> 
+	     commande:=Get_line(Fichier_paquets);
+	     trim(texte,both);
+         if commande="table" then
+            Afficher_Table(Table,Numero_ligne);
+         else if commnade="fin"
+           A_Fini:= true;   
+         end if;
+    end loop;    
+   close(Fichier_resultats;)
+   close(Fichier_paquets);
+   end paquetage;     
 		    	    
 
 
@@ -181,7 +184,7 @@ procedure routeur_simple is
       Afficher_IP(Ligne.Masque);
       Put(To_String(Ligne.Destination));
       New_Line;
-    end Afficher_Ligne;
+    end Affinitialiser(Table, Fichier_Table);icher_Ligne;
 
     procedure Afficher_Table (Table : T_Liste_Chainee ; Numero_Ligne : Integer) is
       procedure Afficher_Table_Ligne is new Pour_Chaque(Traiter => Afficher_Ligne);

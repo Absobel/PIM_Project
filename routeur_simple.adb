@@ -43,7 +43,7 @@ procedure routeur_simple is
 	    trouve: Boolean;
 	    Numero_Ligne: Integer;
 
-    --traiter les commandes du fichier de paquetage 
+    --traiter les commandes du fichier de paquetage
     create(Sortie,Out_File,To_string(Nom_sortie));
     Open(Entree,In_File,To_string(Nom_entree));
     Open(Sortie,Out_File,To_string(fichier_sortie));
@@ -54,19 +54,19 @@ procedure routeur_simple is
 	    trim(texte,both)
 	    if texte="table" then
 		    afficher(table : in T_tab );
-	    else if texte:="Cache" then 
-		    --afficher le cache 
+	    else if texte:="Cache" then
+		    --afficher le cache
             else if texte:= "stat"
-		    --afficher les stat 
+		    --afficher les stat
 	    else
-		    if trouve then 
+		    if trouve then
 			    --afficher la destination et l'interface
-		    else 
+		    else
 			    --enregistrer le chemin dans le cache
 	    close(Sortie)
 	    close(Entree)
-		    
-		    	    
+
+
 
 
 
@@ -228,6 +228,11 @@ procedure routeur_simple is
         Ajouter(Table, Ligne_Table);
       exit when End_Of_File(Fichier_Table);
       end loop;
+      exception
+        when End_Error =>
+          Put ("Blancs en surplus à la fin du fichier.");
+          null;
+      end;
     end Initialiser_Table;
 
 

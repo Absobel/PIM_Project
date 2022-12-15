@@ -1,10 +1,24 @@
 with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Text_IO;      use Ada.Text_IO;
+with Ada.Integer_Text_IO;    use Ada.Integer_Text_IO;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with exceptions; use exceptions;
+with liste_chainee;
+with Ada.Strings;               use Ada.Strings;
+with Ada.Text_IO.Unbounded_IO;  use Ada.Text_IO.Unbounded_IO;
 
 -- Pour l'instant c'est un routeur simple jusqu'au 17 Décembre
 procedure routeur_simple is
+
+    Type T_Adresse_IP is mod 2**32;
+    Type T_Ligne_table is record
+      Adresse : T_Adresse_IP;
+      Masque : T_Adresse_IP;
+      Destination : Unbounded_String;
+    end record;
+
+    Package Liste_Table is new liste_chainee(T_Ligne_table);
+    use Liste_Table;
 
     procedure Usage is
     begin
@@ -60,12 +74,12 @@ procedure routeur_simple is
 
 
     procedure Argument_Parsing(
-        Argument_Count : in Integer; 
-        Cache_Size :     out Integer; 
-        Policy :         out Unbounded_String; 
-        Stat :           out Boolean; 
-        Table_File :     out Unbounded_String; 
-        Packet_File :    out Unbounded_String; 
+        Argument_Count : in Integer;
+        Cache_Size :     out Integer;
+        Policy :         out Unbounded_String;
+        Stat :           out Boolean;
+        Table_File :     out Unbounded_String;
+        Packet_File :    out Unbounded_String;
         Result_File :    out Unbounded_String) is
 
         i : Integer := 1;
@@ -129,22 +143,116 @@ procedure routeur_simple is
     end;
 
 
+    function Comparer_table(Table : T_Liste_Chainee ; Adresse : T_Adresse_IP) return Unbounded_String is
+      Adresse_Masquee : T_Adresse_IP;
+      Masque_Max : T_Adresse_IP := 0;
+      Interface_Sortie : Unbounded_String;
+
+      procedure Comparer_Ligne(Ligne : T_Ligne_table) is
+      begin
+        Adresse_Masquee := Adresse and Ligne.Masque;
+        if Adresse_Masquee = Ligne.Adresse and Ligne.Masque > Masque_Max then
+          Masque_Max := Ligne.Masque;
+          Interface_Sortie := Ligne.Destination;
+        end if;
+      end Comparer_Ligne;
+
+      procedure Parcourir_Table is new Pour_Chaque(Traiter => Comparer_Ligne);
+
+    begin
+      Parcourir_Table(Table);
+      return Interface_Sortie;
+    end Comparer_table;
+
+    procedure Afficher_IP (Adresse : T_Adresse_IP) is
+    begin
+      for i in 0..2 loop
+        Put(Natural (Adresse/256**(3-i) mod 256));
+        Put(".");
+      end loop;
+      put(Natural (Adresse mod 256));
+      Put(" ");
+    end Afficher_IP;
+
+
+    procedure Afficher_Ligne (Ligne : T_Ligne_table) is
+    begin
+      Afficher_IP(Ligne.Adresse);
+      Afficher_IP(Ligne.Masque);
+      Put(To_String(Ligne.Destination));
+      New_Line;
+    end Afficher_Ligne;
+
+    procedure Afficher_Table (Table : T_Liste_Chainee ; Numero_Ligne : Integer) is
+      procedure Afficher_Table_Ligne is new Pour_Chaque(Traiter => Afficher_Ligne);
+    begin
+      Put("table : (ligne ");
+      put(Numero_Ligne);
+      Put(")");
+      New_Line;
+      Afficher_Table_Ligne(Table);
+    end Afficher_Table;
+
+    function Transforme_Ip(Fichier_Table : in File_Type) return T_Adresse_IP is
+      Octet : Integer;
+      Separateur : Character;
+      Adresse : T_Adresse_IP := 0;
+    begin
+      for i in 0..3 loop
+        Get(Octet);
+        Adresse :=  T_Adresse_IP(Octet) + Adresse*256;
+        if i < 3 then
+          Get(Fichier_Table, Separateur);
+          if Separateur /= '.' then
+            Put_Line("Erreur de syntaxe dans l'adresse IP");
+            raise ErreurFormat;
+          end if;
+        end if;
+      end loop;
+      return Adresse;
+    end Transforme_Ip;
+
+    procedure Initialiser_Table(Table : in out T_Liste_Chainee ; Fichier_Table : in File_Type ) is
+      Adresse : T_Adresse_IP;
+      Masque : T_Adresse_IP;
+      Destination : Unbounded_String;
+      Ligne_Table : T_Ligne_table;
+    begin
+      Initialiser(Table);
+      loop
+        Adresse := Transforme_Ip(Fichier_Table);
+        Masque := Transforme_Ip(Fichier_Table);
+        Destination := Get_Line(Fichier_Table);
+        Trim(Destination, Both);
+        Ligne_Table := (Adresse, Masque, Destination);
+        Ajouter(Table, Ligne_Table);
+      exit when End_Of_File(Fichier_Table);
+      end loop;
+    end Initialiser_Table;
+
 
     Cache_Size : Integer := 0;
     Policy : Unbounded_String := To_Unbounded_String("");
     Stat : Boolean;
-    Table_File : Unbounded_String := To_Unbounded_String("");
-    Packet_File : Unbounded_String := To_Unbounded_String("");
-    Result_File : Unbounded_String := To_Unbounded_String("");
+    Nom_Fichier_Table : Unbounded_String := To_Unbounded_String("");
+    Nom_Fichier_Paquets : Unbounded_String := To_Unbounded_String("");
+    Nom_Fichier_Resultats : Unbounded_String := To_Unbounded_String("");
+    Table : T_Liste_Chainee;
 
 begin
-    Argument_Parsing(Argument_Count, Cache_Size, Policy, Stat, Table_File, Packet_File, Result_File);
-    
+    Argument_Parsing(Argument_Count, Cache_Size, Policy, Stat, Nom_Fichier_Table, Nom_Fichier_Paquets, Nom_Fichier_Resultats);
+
     -- DEBUG
     Put_Line("Cache_Size : " & Integer'Image(Cache_Size));
     Put_Line("Policy : " & To_String(Policy));
     Put_Line("Stat : " & Boolean'Image(Stat));
+<<<<<<< HEAD
     Put_Line("Table_File : " & To_String(Table_File));
     Put_Line("Packet_File : " & To_String(Packet_File));
     Put_Line("Result_File : " & To_String(Result_File));
+=======
+    Put_Line("Table_File : " & To_String(Nom_Fichier_Table));
+    Put_Line("Packet_File : " & To_String(Nom_Fichier_Paquets));
+    Put_Line("Result_File : " & To_String(Nom_Fichier_Resultats));
+>>>>>>> f6787b772b4054e8e891e43b82ab17c76068eb51
 end routeur_simple;

@@ -17,9 +17,18 @@ procedure routeur_simple is
         Put_Line("  -S : Ne pas afficher les statistiques.");
         Put_Line("  -t <fichier> : Définir le nom du fichier contenant les routes de la table de routage. Par défaut, on utilise le fichier table.txt.");
         Put_Line("  -r <fichier> : Définir le nom du fichier contenant les résultats (adresse IP destination du paquet et inter-face utilisée). Par défaut, on utilise le fichier resultats.txt.");
-    end;
+   end;
+    
+   
+   prcedure creer_Table( table : in out T_Tab ) is 
+   begin
+      open(Entree,In_File,Table_File);
+      loop
+	            get(Entree,valeur);
+               texte:=Get_line(Entree);
+               trim(texte,both)
 
-
+    --traiter les commandes du fichier de paquetage 
     procedure paquetage is
 	    Entree:File_Type;
 	    sortie:File_Type;
@@ -27,28 +36,21 @@ procedure routeur_simple is
 	    Nom_entree: Unbounded_string;
 	    texte: unbounded_String;
 	    trouve: Boolean;
-	    Numero_Ligne: Integer;
-
-    --traiter les commandes du fichier de paquetage 
+      Numero_Ligne: Integer;
+   begin
+      
     create(Sortie,Out_File,To_string(Nom_sortie));
     Open(Entree,In_File,To_string(Nom_entree));
     Open(Sortie,Out_File,To_string(fichier_sortie));
+    
     while not End_Of_File(Entree) and then texte/="fin" loop
 	    Numero_ligne:=Integer(Line(entree));
 	    get(Entree,valeur);
 	    texte:=Get_line(Entree);
-	    trim(texte,both)
-	    if texte="table" then
+        trim(texte,both)
+      
+         if texte="table" then 
 		    afficher(table : in T_tab );
-	    else if texte:="Cache" then 
-		    --afficher le cache 
-            else if texte:= "stat"
-		    --afficher les stat 
-	    else
-		    if trouve then 
-			    --afficher la destination et l'interface
-		    else 
-			    --enregistrer le chemin dans le cache
 	    close(Sortie)
 	    close(Entree)
 		    

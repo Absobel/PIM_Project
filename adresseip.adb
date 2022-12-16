@@ -12,7 +12,7 @@ package body adresseIP is
       Put(" ");
     end AfficherAdresseIP;
 
-    procedure AfficherAdresseIP (Fichier : in out File_Type ; Adresse : in T_AdresseIP) is
+    procedure EnregistrerAdresse (Fichier : in out File_Type ; Adresse : in T_AdresseIP) is
     begin
       for i in 0..2 loop
         Put(Fichier, Natural (Adresse/256**(3-i) mod 256), 1);
@@ -20,7 +20,7 @@ package body adresseIP is
       end loop;
       put(Fichier, Natural (Adresse mod 256), 1);
       Put(Fichier, " ");
-    end AfficherAdresseIP;
+    end EnregistrerAdresse;
 
     function TransformerAdresseIp(Fichier : in out File_Type) return T_AdresseIP is
       Octet : Integer;

@@ -1,5 +1,5 @@
 with Ada.Text_IO;            use Ada.Text_IO;
-with SDA_Exceptions;         use SDA_Exceptions;
+with exceptions;              use exceptions;
 with Ada.Unchecked_Deallocation;
 
 package body LCA is
@@ -109,5 +109,27 @@ package body LCA is
 			Aux := Aux.All.Suivant;
 		end loop;
 	end Pour_Chaque;
+
+
+	procedure Ajouter_Fin (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) is
+		Aux : T_LCA := Sda;
+	begin
+		while Aux /= null loop
+			Aux := Aux.All.Suivant;
+		end loop;
+		Aux := new T_Cellule'(Cle, Donnee, null);
+	end Ajouter_Fin;
+
+
+	procedure Supprimer_Tete (Sda : in out T_LCA) is
+		Aux : T_LCA := Sda;
+	begin
+		if Sda = null then
+			raise Liste_Vide_Exception;
+		else
+			Sda := Sda.All.Suivant;
+			Free(Aux);
+		end if;
+	end Supprimer_Tete;
 
 end LCA;

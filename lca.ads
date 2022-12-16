@@ -60,8 +60,7 @@ package LCA is
 
 	-- Supprimer tête de liste
 	procedure Supprimer_Tete (Sda : in out T_LCA) with
-		Post =>  Taille (Sda) = Taille (Sda)'Old - 1 -- un �l�ment de moins
-			and not Cle_Presente (Sda, Cle);         -- la cl� a �t� supprim�e
+		Post =>  Taille (Sda) = Taille (Sda)'Old - 1; -- un �l�ment de moins
 
 	
 

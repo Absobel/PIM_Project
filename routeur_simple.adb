@@ -6,18 +6,18 @@ with exceptions; use exceptions;
 with LCA;
 with Ada.Strings;               use Ada.Strings;
 with Ada.Text_IO.Unbounded_IO;  use Ada.Text_IO.Unbounded_IO;
+with Ada.Exceptions;            use Ada.Exceptions;	-- pour Exception_Messagebounded_IO;
 
 -- Pour l'instant c'est un routeur simple jusqu'au 17 Décembre
 procedure routeur_simple is
 
     Type T_Adresse_IP is mod 2**32;
-    Type T_Ligne_table is record
-      Adresse : T_Adresse_IP;
+    Type T_Donnee is record
       Masque : T_Adresse_IP;
       Destination : Unbounded_String;
     end record;
 
-    Package Liste_Table is new LCA(T_Ligne_table);
+    Package Liste_Table is new LCA(T_Adresse_IP, T_Donnee);
     use Liste_Table;
 
     procedure Usage is
@@ -32,82 +32,6 @@ procedure routeur_simple is
         Put_Line("  -t <fichier> : Définir le nom du fichier contenant les routes de la table de routage. Par défaut, on utilise le fichier table.txt.");
         Put_Line("  -r <fichier> : Définir le nom du fichier contenant les résultats (adresse IP destination du paquet et inter-face utilisée). Par défaut, on utilise le fichier resultats.txt.");
     end;
-
-<<<<<<< HEAD
-    --traiter les commandes du fichier de paquetage 
-    procedure paquetage is
-      Fichier_paquets: File_Type;
-      Fichier_resultats:File_Type;
-      Fichier_table: File_Type;
-      Nom_Fichier_resultats: Unbounded_string;
-      Nom_Fichier_paquets: Unbounded_string;
-      Nom_Fichier_Table: Unbounded_string;
-      commande: unbounded_String;
-      Numero_Ligne: Integer;
-      Table: T_Liste_chainee;
-      adresse: T_Adresse_Ip;
-      A_Fini: Boolean;
-   begin
-    create(Fichier_resultats,Out_File,To_string(Nom_ Fichier_resultats));
-    Open(Fichier_paquets,In_File,To_string(Nom_ Fichier_paquets));
-    Open(Fichier_resultats,Out_File,To_string(Nom_Fichier_resultats));
-    Open(Fichier_Table,In_File,To_ String(Nom_Fichier_Table)
-    initialiser(Table, Fichier_Table); 
-    close(Fichier_Table);
-    while not End_Of_File(Entree) and then A_Fini loop
-         Numero_ligne:=Integer(Line(Fichier_paquets));
-         Transform_Ip(Fichier_Table);
-         exception
-         when   ==> 
-	     commande:=Get_line(Fichier_paquets);
-	     trim(texte,both);
-         if commande="table" then
-            Afficher_Table(Table,Numero_ligne);
-         else if commnade="fin"
-           A_Fini:= true;   
-         end if;
-    end loop;    
-   close(Fichier_resultats;)
-   close(Fichier_paquets);
-   end paquetage;     
-		    	    
-=======
-
-    procedure paquetage is
-	    Entree:File_Type;
-	    sortie:File_Type;
-	    Nom_sortie: Unbounded_string;
-	    Nom_entree: Unbounded_string;
-	    texte: unbounded_String;
-	    trouve: Boolean;
-	    Numero_Ligne: Integer;
-
-    --traiter les commandes du fichier de paquetage
-    create(Sortie,Out_File,To_string(Nom_sortie));
-    Open(Entree,In_File,To_string(Nom_entree));
-    Open(Sortie,Out_File,To_string(fichier_sortie));
-    while not End_Of_File(Entree) and then texte/="fin" loop
-	    Numero_ligne:=Integer(Line(entree));
-	    get(Entree,valeur);
-	    texte:=Get_line(Entree);
-	    trim(texte,both)
-	    if texte="table" then
-		    afficher(table : in T_tab );
-	    else if texte:="Cache" then
-		    --afficher le cache
-            else if texte:= "stat"
-		    --afficher les stat
-	    else
-		    if trouve then
-			    --afficher la destination et l'interface
-		    else
-			    --enregistrer le chemin dans le cache
-	    close(Sortie)
-	    close(Entree)
-
-
->>>>>>> a6cd1a22129472490a9fb92f8a528df0a546eb18
-
 
 
 
@@ -171,7 +95,11 @@ procedure routeur_simple is
                     Usage;
                     raise CommandeInvalide;
                 end if;
-                Table_File := To_Unbounded_String(Argument(i+1));
+                if Argument_i = "-t" then
+                  Table_File := To_Unbounded_String(Argument(i+1));
+                else
+                  Result_File := To_Unbounded_String(Argument(i+1));
+                end if;
                 i := i + 1;
             else
                 Put_Line("Argument inconnu : " & Argument(i));
@@ -183,17 +111,74 @@ procedure routeur_simple is
     end;
 
 
+    procedure Afficher_IP (Adresse : T_Adresse_IP) is
+    begin
+      for i in 0..2 loop
+        Put(Natural (Adresse/256**(3-i) mod 256), 1);
+        Put(".");
+      end loop;
+      put(Natural (Adresse mod 256), 1);
+      Put(" ");
+    end Afficher_IP;
+
+    procedure Afficher_IP (Fichier : File_Type ; Adresse : T_Adresse_IP) is
+    begin
+      for i in 0..2 loop
+        Put(Fichier, Natural (Adresse/256**(3-i) mod 256), 1);
+        Put(Fichier, ".");
+      end loop;
+      put(Fichier, Natural (Adresse mod 256), 1);
+      Put(Fichier, " ");
+    end Afficher_IP;
+
+
+    procedure Afficher_Ligne (Cle : T_Adresse_IP  ; Donnee : T_Donnee) is
+    begin
+      Afficher_IP(Cle);
+      Afficher_IP(Donnee.Masque);
+      Put(To_String(Donnee.Destination));
+      New_Line;
+    end Afficher_Ligne;
+
+    procedure Afficher_Table (Table : T_LCA ; Numero_Ligne : Integer) is
+      procedure Afficher_Table_Ligne is new Pour_Chaque(Traiter => Afficher_Ligne);
+    begin
+      Put("table : (ligne ");
+      put(Numero_Ligne, 1);
+      Put(")");
+      New_Line;
+      Afficher_Table_Ligne(Table);
+    end Afficher_Table;
+
+    function Transforme_Ip(Fichier_Table : in out File_Type) return T_Adresse_IP is
+      Octet : Integer;
+      Separateur : Character;
+      Adresse : T_Adresse_IP := 0;
+    begin
+      for i in 0..3 loop
+        Get(Fichier_Table, Octet);
+        Adresse :=  T_Adresse_IP(Octet) + Adresse*256;
+        if i < 3 then
+          Get(Fichier_Table, Separateur);
+          if Separateur /= '.' then
+            Put_Line("Erreur de syntaxe dans l'adresse IP");
+          end if;
+        end if;
+      end loop;
+      return Adresse;
+    end Transforme_Ip;
+
     function Comparer_table(Table : T_LCA ; Adresse : T_Adresse_IP) return Unbounded_String is
       Adresse_Masquee : T_Adresse_IP;
       Masque_Max : T_Adresse_IP := 0;
-      Interface_Sortie : Unbounded_String;
+      Interface_Sortie : Unbounded_String := To_Unbounded_String("Erreur routage");
 
-      procedure Comparer_Ligne(Ligne : T_Ligne_table) is
+      procedure Comparer_Ligne(Cle : T_Adresse_IP ; Donnee : T_Donnee) is
       begin
-        Adresse_Masquee := Adresse and Ligne.Masque;
-        if Adresse_Masquee = Ligne.Adresse and Ligne.Masque > Masque_Max then
-          Masque_Max := Ligne.Masque;
-          Interface_Sortie := Ligne.Destination;
+        Adresse_Masquee := Adresse and Donnee.Masque;
+        if Adresse_Masquee = Cle and Donnee.Masque >= Masque_Max then
+          Masque_Max := Donnee.Masque;
+          Interface_Sortie := Donnee.Destination;
         end if;
       end Comparer_Ligne;
 
@@ -204,59 +189,12 @@ procedure routeur_simple is
       return Interface_Sortie;
     end Comparer_table;
 
-    procedure Afficher_IP (Adresse : T_Adresse_IP) is
-    begin
-      for i in 0..2 loop
-        Put(Natural (Adresse/256**(3-i) mod 256));
-        Put(".");
-      end loop;
-      put(Natural (Adresse mod 256));
-      Put(" ");
-    end Afficher_IP;
-
-
-    procedure Afficher_Ligne (Ligne : T_Ligne_table) is
-    begin
-      Afficher_IP(Ligne.Adresse);
-      Afficher_IP(Ligne.Masque);
-      Put(To_String(Ligne.Destination));
-      New_Line;
-    end Affinitialiser(Table, Fichier_Table);icher_Ligne;
-
-    procedure Afficher_Table (Table : T_LCA ; Numero_Ligne : Integer) is
-      procedure Afficher_Table_Ligne is new Pour_Chaque(Traiter => Afficher_Ligne);
-    begin
-      Put("table : (ligne ");
-      put(Numero_Ligne);
-      Put(")");
-      New_Line;
-      Afficher_Table_Ligne(Table);
-    end Afficher_Table;
-
-    function Transforme_Ip(Fichier_Table : in File_Type) return T_Adresse_IP is
-      Octet : Integer;
-      Separateur : Character;
-      Adresse : T_Adresse_IP := 0;
-    begin
-      for i in 0..3 loop
-        Get(Octet);
-        Adresse :=  T_Adresse_IP(Octet) + Adresse*256;
-        if i < 3 then
-          Get(Fichier_Table, Separateur);
-          if Separateur /= '.' then
-            Put_Line("Erreur de syntaxe dans l'adresse IP");
-            raise ErreurFormat;
-          end if;
-        end if;
-      end loop;
-      return Adresse;
-    end Transforme_Ip;
 
     procedure Initialiser_Table(Table : in out T_LCA ; Fichier_Table : in File_Type ) is
       Adresse : T_Adresse_IP;
       Masque : T_Adresse_IP;
       Destination : Unbounded_String;
-      Ligne_Table : T_Ligne_table;
+      Ligne_Table : T_Donnee;
     begin
       Initialiser(Table);
       loop
@@ -264,40 +202,77 @@ procedure routeur_simple is
         Masque := Transforme_Ip(Fichier_Table);
         Destination := Get_Line(Fichier_Table);
         Trim(Destination, Both);
-        Ligne_Table := (Adresse, Masque, Destination);
-        Ajouter(Table, Ligne_Table);
+        Ligne_Table := (Masque, Destination);
+        Enregistrer(Table, Adresse, Ligne_Table);
       exit when End_Of_File(Fichier_Table);
       end loop;
       exception
         when End_Error =>
           Put ("Blancs en surplus à la fin du fichier.");
           null;
-      end;
     end Initialiser_Table;
 
 
-    Cache_Size : Integer := 0;
-    Policy : Unbounded_String := To_Unbounded_String("");
-    Stat : Boolean;
-    Nom_Fichier_Table : Unbounded_String := To_Unbounded_String("");
-    Nom_Fichier_Paquets : Unbounded_String := To_Unbounded_String("");
-    Nom_Fichier_Resultats : Unbounded_String := To_Unbounded_String("");
-    Table : T_LCA;
+    --traiter les commandes du fichier de paquetage
 
-begin
-    Argument_Parsing(Argument_Count, Cache_Size, Policy, Stat, Nom_Fichier_Table, Nom_Fichier_Paquets, Nom_Fichier_Resultats);
+      Fichier_paquets: File_Type;
+      Fichier_resultats:File_Type;
+      Fichier_table: File_Type;
+      Taille_cache : Integer;
+      Afficher_Statistiques : Boolean;
+      Politique : Unbounded_string;
+      Nom_Fichier_resultats: Unbounded_string;
+      Nom_Fichier_paquets: Unbounded_string;
+      Nom_Fichier_Table: Unbounded_string;
+      commande: unbounded_String;
+      Numero_Ligne: Integer;
+      Table: T_LCA;
+      adresse: T_Adresse_Ip;
+      A_Fini: Boolean;
 
-    -- DEBUG
-    Put_Line("Cache_Size : " & Integer'Image(Cache_Size));
-    Put_Line("Policy : " & To_String(Policy));
-    Put_Line("Stat : " & Boolean'Image(Stat));
-<<<<<<< HEAD
-    Put_Line("Table_File : " & To_String(Table_File));
-    Put_Line("Packet_File : " & To_String(Packet_File));
-    Put_Line("Result_File : " & To_String(Result_File));
-=======
-    Put_Line("Table_File : " & To_String(Nom_Fichier_Table));
-    Put_Line("Packet_File : " & To_String(Nom_Fichier_Paquets));
-    Put_Line("Result_File : " & To_String(Nom_Fichier_Resultats));
->>>>>>> f6787b772b4054e8e891e43b82ab17c76068eb51
+
+   begin
+
+    Argument_Parsing(Argument_Count, Taille_Cache, Politique, Afficher_Statistiques, Nom_Fichier_Table, Nom_Fichier_paquets, Nom_Fichier_resultats);
+
+    create(Fichier_resultats, Out_File, To_string(Nom_Fichier_resultats));
+    Open(Fichier_paquets, In_File, To_string(Nom_Fichier_paquets));
+
+    Open(Fichier_Table, In_File, To_String(Nom_Fichier_Table));
+    Initialiser_Table(Table, Fichier_Table);
+    close(Fichier_Table);
+
+    A_Fini := False;
+
+    while not End_Of_File(Fichier_paquets) and then not A_Fini loop
+
+      begin
+        Numero_ligne:=Integer(Line(Fichier_paquets));
+        Adresse := Transforme_Ip(Fichier_paquets);
+        Afficher_IP(Fichier_resultats, Adresse);
+        Put(Fichier_resultats, Comparer_Table(Table, Adresse));
+        New_Line(Fichier_resultats);
+        Skip_Line(Fichier_paquets);
+
+      exception
+          when DATA_ERROR =>
+	          commande:=Get_line(Fichier_paquets);
+	          trim(commande,both);
+            if commande="table" then
+              Afficher_Table(Table,Numero_ligne);
+            elsif commande="fin" then
+              A_Fini:= true;
+            else
+              Put_Line("Commande inconnue à la ligne " & Integer'Image(Numero_ligne));
+            end if;
+        when E : others =>
+          Put_Line("Erreur de syntaxe dans le fichier de paquets à la ligne" & Integer'Image(Numero_Ligne));
+          Put_Line("Erreur : " & Exception_Message(E));
+          raise ErreurFormat;
+
+      end;
+    end loop;
+   close(Fichier_resultats);
+   close(Fichier_paquets);
+  put("Fin du programme");
 end routeur_simple;

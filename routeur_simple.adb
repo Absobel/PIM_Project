@@ -150,7 +150,7 @@ procedure routeur_simple is
       Afficher_Table_Ligne(Table);
     end Afficher_Table;
 
-    function Transforme_Ip(Fichier_Table : in File_Type) return T_Adresse_IP is
+    function Transforme_Ip(Fichier_Table : in out File_Type) return T_Adresse_IP is
       Octet : Integer;
       Separateur : Character;
       Adresse : T_Adresse_IP := 0;

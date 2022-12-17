@@ -8,8 +8,11 @@ with Ada.Exceptions;            use Ada.Exceptions;	-- pour Exception_Messagebou
 with adresseIP;                 use adresseIP;
 with TableRoutage;              use TableRoutage;
 
--- Pour l'instant c'est un routeur simple jusqu'au 17 Décembre
+
+
 procedure routeur_simple is
+
+    -- Indique à l'utilisateur comment utiliser le promgramme en cas de commande invalide.
 
     procedure Usage is
     begin
@@ -26,7 +29,7 @@ procedure routeur_simple is
 
 
 
-
+    -- Assigne chaque variable à un valeur selon la ligne de commande et les différentes valeurs par défaut.
 
     procedure Argument_Parsing(
         Argument_Count : in Integer;
@@ -54,7 +57,8 @@ procedure routeur_simple is
         end if;
         while i <= Argument_Count loop
             Argument_i := To_Unbounded_String(Argument(i));
-            if Argument_i = "-c" then
+
+            if Argument_i = "-c" then                   -- l'option -c permet de donner la taille maximale du cache.
                 begin
                     Cache_Size := Integer'Value(Argument(i+1));
                 exception
@@ -64,6 +68,7 @@ procedure routeur_simple is
                         raise CommandeInvalide;
                 end;
                 i := i + 1;
+
             elsif Argument_i = "-p" then                 -- l'option -p peut être à la fois pour la politique et à la fois pour le nom de fichier de paquets
                 if i+1 > Argument_Count then
                     Put_Line("Il manque un argument à -p à la position " & Integer'Image(i));
@@ -76,27 +81,33 @@ procedure routeur_simple is
                     Packet_File := To_Unbounded_String(Argument(i+1));
                 end if;
                 i := i + 1;
-            elsif Argument_i = "-s" then
+
+            elsif Argument_i = "-s" then                -- l'option -s permet d'afficher les statistiques du cache.
                 Stat := True;
-            elsif Argument_i = "-S" then
+
+            elsif Argument_i = "-S" then                -- l'option -S permet de ne pas afficher les statistiques du cache.
                 Stat := False;
-            elsif Argument_i = "-t" or Argument_i = "-r" then
+
+            elsif Argument_i = "-t" or Argument_i = "-r" then   -- l'option -t donne le chemin vers le ficher de la table de routage
+                -- l'option -r donne le chemin vers le fichier de résultats
                 if i+1 > Argument_Count then
                     Put_Line("Il manque un argument à " & Argument(i) & " à la position " & Integer'Image(i));
                     Usage;
                     raise CommandeInvalide;
                 end if;
                 if Argument_i = "-t" then
-                  Table_File := To_Unbounded_String(Argument(i+1));
+                    Table_File := To_Unbounded_String(Argument(i+1));
                 else
-                  Result_File := To_Unbounded_String(Argument(i+1));
+                    Result_File := To_Unbounded_String(Argument(i+1));
                 end if;
                 i := i + 1;
-            else
+
+            else                      -- Si l'argument n'est pas reconnu, on affiche l'usage et on soulève l'erreur CommandeInvalide.
                 Put_Line("Argument inconnu : " & Argument(i));
                 Usage;
                 raise CommandeInvalide;
             end if;
+
             i := i + 1;
         end loop;
     end;
@@ -104,23 +115,25 @@ procedure routeur_simple is
 
     --traiter les commandes du fichier de paquetage
 
-      Fichier_paquets: File_Type;
-      Fichier_resultats:File_Type;
-      Fichier_table: File_Type;
-      Taille_cache : Integer;
-      Afficher_Statistiques : Boolean;
-      Politique : Unbounded_string;
-      Nom_Fichier_resultats: Unbounded_string;
-      Nom_Fichier_paquets: Unbounded_string;
-      Nom_Fichier_Table: Unbounded_string;
-      commande: unbounded_String;
-      Numero_Ligne: Integer;
-      Table: Liste_Table.T_LCA;
-      adresse: T_AdresseIP;
-      A_Fini: Boolean;
+    Fichier_paquets: File_Type;
+    Fichier_resultats:File_Type;
+    Fichier_table: File_Type;
+    Taille_cache : Integer;
+    Afficher_Statistiques : Boolean;
+    Politique : Unbounded_string;
+    Nom_Fichier_resultats: Unbounded_string;
+    Nom_Fichier_paquets: Unbounded_string;
+    Nom_Fichier_Table: Unbounded_string;
+    commande: unbounded_String;
+    Numero_Ligne: Integer;
+    Table: Liste_Table.T_LCA;
+    adresse: T_AdresseIP;
+    A_Fini: Boolean;
 
 
-   begin
+begin
+
+    -- On initialise les différentes constantes, et on ouvre les fichiers de paquets, de résultats et de table de routage.
 
     Argument_Parsing(Argument_Count, Taille_Cache, Politique, Afficher_Statistiques, Nom_Fichier_Table, Nom_Fichier_paquets, Nom_Fichier_resultats);
 
@@ -135,33 +148,44 @@ procedure routeur_simple is
 
     while not End_Of_File(Fichier_paquets) and then not A_Fini loop
 
-      begin
-        Numero_ligne:=Integer(Line(Fichier_paquets));
-        Adresse := Transforme_Ip(Fichier_paquets);
-        Afficher_IP(Fichier_resultats, Adresse);
-        Put(Fichier_resultats, Comparer_Table(Table, Adresse));
-        New_Line(Fichier_resultats);
-        Skip_Line(Fichier_paquets);
+        begin
 
-      exception
-          when DATA_ERROR =>
-	          commande:=Get_line(Fichier_paquets);
-	          trim(commande,both);
-            if commande="table" then
-              Afficher_Table(Table,Numero_ligne);
-            elsif commande="fin" then
-              A_Fini:= true;
-            else
-              Put_Line("Commande inconnue à la ligne " & Integer'Image(Numero_ligne));
-            end if;
-        when E : others =>
-          Put_Line("Erreur de syntaxe dans le fichier de paquets à la ligne" & Integer'Image(Numero_Ligne));
-          Put_Line("Erreur : " & Exception_Message(E));
-          raise ErreurFormat;
+            -- On lit la ligne et on la traite comme une adresse IP (comparaison à la table, enregistrement dans le fichier résultats).
 
-      end;
+            Numero_ligne:=Integer(Line(Fichier_paquets));
+            Adresse := TransformerAdresseIP(Fichier_paquets);
+            EnregistrerAdresse(Fichier_resultats, Adresse);
+            Put(Fichier_resultats, Comparer_Table(Table, Adresse));
+            New_Line(Fichier_resultats);
+            Skip_Line(Fichier_paquets);
+
+        exception
+                -- Si on rencontre une erreur de type Data_error, c'est qu'il s'agit d'une commande.
+            when DATA_ERROR =>
+                commande:=Get_line(Fichier_paquets);
+                trim(commande,both);
+
+                if commande="table" then    -- la commande "table" permet d'afficher la table de routage.
+                    Afficher_Table(Table,Numero_ligne);
+
+                elsif commande="fin" then   -- la commande "fin" permet de terminer le programme.
+                    A_Fini := True;
+                    A_Fini:= true;
+
+                else    -- Si la commande n'est pas reconnue, on affiche un message et on continue.
+                    Put_Line("Commande inconnue à la ligne " & Integer'Image(Numero_ligne));
+                end if;
+
+                -- Si l'errur est inconnue, on affiche le message d'erreur et on arrête le programme.
+            when E : others =>
+                Put_Line("Erreur de syntaxe dans le fichier de paquets à la ligne" & Integer'Image(Numero_Ligne));
+                Put_Line("Erreur : " & Exception_Message(E));
+                A_Fini := True;
+
+        end;
     end loop;
-   close(Fichier_resultats);
-   close(Fichier_paquets);
-  put("Fin du programme");
+    close(Fichier_resultats);
+    close(Fichier_paquets);
+    put("Fin du programme");
+
 end routeur_simple;

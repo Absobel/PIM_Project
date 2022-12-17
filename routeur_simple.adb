@@ -1,6 +1,5 @@
 with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Text_IO;      use Ada.Text_IO;
-with Ada.Integer_Text_IO;    use Ada.Integer_Text_IO;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with exceptions; use exceptions;
 with Ada.Strings;               use Ada.Strings;
@@ -116,7 +115,7 @@ procedure routeur_simple is
       Nom_Fichier_Table: Unbounded_string;
       commande: unbounded_String;
       Numero_Ligne: Integer;
-      Table: T_LCA;
+      Table: Liste_Table.T_LCA;
       adresse: T_AdresseIP;
       A_Fini: Boolean;
 

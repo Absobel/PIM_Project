@@ -1,9 +1,5 @@
 with Ada.Text_IO;            use Ada.Text_IO;
-<<<<<<< HEAD
 with exceptions;              use exceptions;
-=======
-with Exceptions;         use Exceptions;
->>>>>>> refs/remotes/origin/main
 with Ada.Unchecked_Deallocation;
 
 package body LCA is

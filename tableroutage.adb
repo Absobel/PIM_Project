@@ -1,3 +1,5 @@
+with Ada.Integer_Text_IO;       use Ada.Integer_Text_IO;
+
 package body TableRoutage is
 
     procedure Afficher_IP (Adresse : T_AdresseIP) is
@@ -79,7 +81,7 @@ package body TableRoutage is
     end Comparer_table;
 
 
-    procedure Initialiser_Table(Table : in out T_LCA ; Fichier_Table : in File_Type ) is
+    procedure Initialiser_Table(Table : in out T_LCA ; Fichier_Table : in out File_Type ) is
       Adresse : T_AdresseIP;
       Masque : T_AdresseIP;
       Destination : Unbounded_String;
@@ -89,16 +91,16 @@ package body TableRoutage is
       loop
         Adresse := Transforme_Ip(Fichier_Table);
         Masque := Transforme_Ip(Fichier_Table);
-        Destination := Get_Line(Fichier_Table);
+        Destination := To_Unbounded_String(Get_Line(Fichier_Table));
         Trim(Destination, Both);
         Ligne_Table := (Masque, Destination);
         Enregistrer(Table, Adresse, Ligne_Table);
       exit when End_Of_File(Fichier_Table);
       end loop;
-      exception
-        when End_Error =>
-          Put ("Blancs en surplus à la fin du fichier.");
-          null;
+    exception
+      when End_Error =>
+        Put ("Blancs en surplus à la fin du fichier.");
+        null;
     end Initialiser_Table;
 
 end TableRoutage;

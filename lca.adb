@@ -20,32 +20,25 @@ package body LCA is
 
 
 	function Taille (Sda : in T_LCA) return Integer is
+		Aux : T_LCA := Sda;
+		Compteur : Integer := 0;
 	begin
-		if Sda = null then
-			return 0;
-		else
-			return 1+Taille(Sda.All.Suivant);
-		end if;
+		while Aux /= null loop
+			Compteur := Compteur + 1;
+			Aux := Aux.All.Suivant;
+		end loop;
+		return Compteur;
 	end Taille;
 
 
-	procedure Enregistrer (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) is
-		Aux: T_LCA := Sda;
-		Bool: Boolean := False; -- Permet de garder en mémoire si la donnée a été enregistrée pour pouvoir sortir de la boucle
+	procedure Ajouter_Fin (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) is
 	begin
-		loop
-			if Aux = null then
-				Sda := new T_Cellule'(Cle, Donnee, Sda);
-				Bool := True;
-			elsif Aux.All.Cle = Cle then
-				Aux.All.Donnee := Donnee;
-				Bool := True;
-			else
-				Aux := Aux.All.Suivant;
-			end if;
-		exit when Bool;
-		end loop;
-	end Enregistrer;
+		if Sda = null then
+			Sda := new T_Cellule'(Cle => Cle, Donnee => Donnee, Suivant => null);
+		else
+			Ajouter_Fin(Sda.All.Suivant, Cle, Donnee);
+		end if;
+	end Ajouter_Fin;
 
 
 	function Cle_Presente (Sda : in T_LCA ; Cle : in T_Cle) return Boolean is
@@ -97,30 +90,6 @@ package body LCA is
 	end Vider;
 
 
-	procedure Pour_Chaque (Sda : in T_LCA) is
-		Aux: T_LCA := Sda;
-	begin
-		while not (Aux = null) loop
-			begin
-				Traiter(Aux.All.Cle, Aux.All.Donnee);
-			exception
-				when others => Put_Line("Erreur de traitement d'une clé et de la donnée associée.");
-			end;
-			Aux := Aux.All.Suivant;
-		end loop;
-	end Pour_Chaque;
-
-
-	procedure Ajouter_Fin (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) is
-		Aux : T_LCA := Sda;
-	begin
-		while Aux /= null loop
-			Aux := Aux.All.Suivant;
-		end loop;
-		Aux := new T_Cellule'(Cle, Donnee, null);
-	end Ajouter_Fin;
-
-
 	procedure Supprimer_Tete (Sda : in out T_LCA) is
 		Aux : T_LCA := Sda;
 	begin
@@ -131,5 +100,19 @@ package body LCA is
 			Free(Aux);
 		end if;
 	end Supprimer_Tete;
+
+
+	procedure Pour_Chaque (Sda : in T_LCA) is
+		Aux: T_LCA := Sda;
+	begin
+		while Aux /= null loop
+			begin
+				Traiter(Aux.All.Cle, Aux.All.Donnee);
+			exception
+				when others => Put_Line("Erreur de traitement d'une clé et de la donnée associée.");
+			end;
+			Aux := Aux.All.Suivant;
+		end loop;
+	end Pour_Chaque;
 
 end LCA;

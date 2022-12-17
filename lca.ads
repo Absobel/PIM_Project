@@ -27,10 +27,9 @@ package LCA is
 
 	-- Enregistrer une Donn�e associ�e � une Cl� dans une Sda.
 	-- Si la cl� est d�j� pr�sente dans la Sda, sa donn�e est chang�e.
-	procedure Enregistrer (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) with
-		Post => Cle_Presente (Sda, Cle) and (La_Donnee (Sda, Cle) = Donnee)   -- donn�e ins�r�e
-				and (not (Cle_Presente (Sda, Cle)'Old) or Taille (Sda) = Taille (Sda)'Old)
-				and (Cle_Presente (Sda, Cle)'Old or Taille (Sda) = Taille (Sda)'Old + 1);
+	procedure Ajouter_Fin (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) with
+		Post => La_Donnee (Sda, Cle) = Donnee
+			and Taille (Sda) = Taille (Sda)'Old + 1; -- un �l�ment de plus
 
 	-- Supprimer la Donn�e associ�e � une Cl� dans une Sda.
 	-- Exception : Cle_Absente_Exception si Cl� n'est pas utilis�e dans la Sda
@@ -52,11 +51,6 @@ package LCA is
 	procedure Vider (Sda : in out T_LCA) with
 		Post => Est_Vide (Sda);
 
-	-- Ajouter en fin de liste
-	procedure Ajouter_Fin (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) with
-		Post => Cle_Presente (Sda, Cle) and (La_Donnee (Sda, Cle) = Donnee)   -- donn�e ins�r�e
-				and (not (Cle_Presente (Sda, Cle)'Old) or Taille (Sda) = Taille (Sda)'Old)
-				and (Cle_Presente (Sda, Cle)'Old or Taille (Sda) = Taille (Sda)'Old + 1);
 
 	-- Supprimer tête de liste
 	procedure Supprimer_Tete (Sda : in out T_LCA) with

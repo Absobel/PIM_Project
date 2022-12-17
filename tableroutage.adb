@@ -94,7 +94,7 @@ package body TableRoutage is
         Destination := To_Unbounded_String(Get_Line(Fichier_Table));
         Trim(Destination, Both);
         Ligne_Table := (Masque, Destination);
-        Enregistrer(Table, Adresse, Ligne_Table);
+        Ajouter_Fin(Table, Adresse, Ligne_Table);
       exit when End_Of_File(Fichier_Table);
       end loop;
     exception

@@ -4,13 +4,31 @@ package adresseIP is
 
     Type T_AdresseIP is mod 2**32;
 
-    -- Affiche l'adresse IP dans le terminal
+    -- But : Afficher une adresse IP dans le terminal sous le format XXX.XXX.XXX.XXX
+    --
+    -- Paramètres :
+    -- adresse : adresse IP à afficher
+    --
+    -- Pre / Post : aucune.
     procedure AfficherAdresseIP (adresse : in T_AdresseIP);
 
-    -- Enregistre l'adresse IP dans un fichier
+    -- But : Enregistrer une adresse IP dans un fichier
+    --
+    -- Paramètres :
+    -- adresse : adresse IP à enregistrer
+    -- fichier : fichier dans lequel enregistrer l'adresse IP
+    --
+    -- Pre / Post : aucune.
     procedure EnregistrerAdresse (Fichier : in out File_Type; adresse : in T_AdresseIP);
 
-    -- Convertit une adresse IP dans le fichier en T_AdresseIP
+    -- But : Transformer une adresse IP littérale (XXX.XXX.XXX.XXX) en T_AdresseIP (un entier modulo 2**32)
+    --
+    -- Paramètres :
+    -- adresse : adresse IP littérale à transformer
+    --
+    -- Pre / Post : aucune.
+    --
+    -- Remarque : Si l'adresse IP littérale n'est pas valide, la fonction soulève une ErreurFormat.
     function TransformerAdresseIP (Fichier : in out File_Type) return T_AdresseIP;
 
 end adresseIP;

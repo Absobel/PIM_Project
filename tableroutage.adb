@@ -1,13 +1,6 @@
 with Ada.Integer_Text_IO;       use Ada.Integer_Text_IO;
 
 package body TableRoutage is
-    -- But : Afficher la table de routage dans le tarminal avec le numéro de la ligne d'appel de la commande
-    --
-    -- Paramètres :
-    -- Table : Table de routage à afficher.
-    -- Numero_Ligne : Numéro de la ligne d'appel de la commande dans le fichier de paquetage.
-    --
-    -- Pre / Post : Aucune.
 
     procedure Afficher_Table (Table : T_LCA ; Numero_Ligne : Integer) is
 
@@ -29,14 +22,6 @@ package body TableRoutage is
         Afficher_Table_Ligne(Table);
     end Afficher_Table;
 
-
-    -- Compare une adresse IP à la table et renvoie l'interface associée (masque le plus grand possible)
-    --
-    -- Paramètres :
-    -- Table : Table de routage.
-    -- Adresse : Adresse IP à comparer.
-    --
-    -- Pre / Post : Aucune.
 
     function Comparer_table(Table : T_LCA ; Adresse : T_AdresseIP) return Unbounded_String is
         Adresse_Masquee : T_AdresseIP;
@@ -61,14 +46,6 @@ package body TableRoutage is
 
     end Comparer_table;
 
-
-    -- Initialise la table de routage avec les valeur dans le fichier Fichier_Table.
-    --
-    -- Paramètres :
-    -- Table : Table de routage à initialiser.
-    -- Fichier_Table : Fichier contenant les valeurs à initialiser.
-    --
-    -- Pre / Post : Aucune.
 
     procedure Initialiser_Table(Table : in out T_LCA ; Fichier_Table : in out File_Type ) is
         Adresse : T_AdresseIP;

@@ -1,8 +1,6 @@
-with adresseIP;              use adresseIP;
-with LCA;
-with Ada.Text_IO;            use Ada.Text_IO;
-with Ada.Strings.Unbounded;  use Ada.Strings.Unbounded;
-with exceptions;             use exceptions;
+with Ada.Text_IO;              use Ada.Text_IO;
+with exceptions;               use exceptions;
+with Ada.Text_IO.Unbounded_IO; use Ada.Text_IO.Unbounded_IO;
 
 package body Cache_LL is
 
@@ -21,32 +19,30 @@ package body Cache_LL is
         Put_Line("Taux de défauts : " & Float'Image(Float(Cache.Nb_Defauts) / Float(Cache.Nb_Appels)));
     end;
 
+
     procedure Afficher (Cache : in T_Cache) is
 
-        procedure Afficher_Liste (Liste : in T_LCA) is
-            Aux : T_LCA := Liste;
+        procedure Afficher_Liste (Cle: T_AdresseIP; Donnee : T_Cellule) is
         begin
-            if Est_Vide(Liste) then
-                Put_Line("Cache vide");
-            else
-                Put_Line("Cache :");
-                Put_Line("Destination - Interface");
-                while not Est_Vide(Aux) loop
-                    AfficherAdresseIP(Aux.All.Cle);
-                    Put("- ");
-                    Put_Line(Aux.All.Donnee.DestInterface);
-                    Aux := Aux.Suivant;
-                end loop;
-            end if;
+            AfficherAdresseIP(Cle);
+            Put(" - ");
+            Put(Donnee.DestInterface);
+            New_Line;
         end Afficher_Liste;
 
-        procedure Afficher_Cache_Liste is new Pour_Chaque(Afficher_Liste);
+        procedure Afficher_Cache_Liste is new Pour_Chaque(Traiter => Afficher_Liste);
 
     begin
-        Afficher_Cache_Liste(Cache.Liste);
+        if Est_Vide(Cache.Liste) then
+            Put_Line("Cache vide");
+        else
+            Put_Line("Destination - Interface");
+            Afficher_Cache_Liste(Cache.Liste);
+        end if;
     end;
 
-    procedure Lire (Cache : in out T_Cache; Destination : in T_AdresseIP; Politique : Unbounded_String; DestInterface : out String; A_Trouve : out Boolean) is
+
+    procedure Lire (Cache : in out T_Cache; Destination : in T_AdresseIP; Politique : Unbounded_String; DestInterface : out Unbounded_String; A_Trouve : out Boolean) is
         Donnee : T_Cellule;
     begin
         for i in 1..Taille(Cache.Liste) loop
@@ -72,24 +68,26 @@ package body Cache_LL is
         end loop;
     end;
 
-    procedure Ajouter (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in String; Politique : in Unbounded_String) is
-        Cellule : T_Cellule := T_Cellule'(DestInterface, 1);
+
+    procedure Ajouter (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in Unbounded_String; Politique : in Unbounded_String) is
+        Cellule : constant T_Cellule := T_Cellule'(DestInterface, 1);
         Min_Cellule : T_Cellule;
         Min : Integer;
+        Dest : T_AdresseIP;
         Min_Dest : T_AdresseIP;
     begin
         Ajouter_Fin(Cache.Liste, Destination, Cellule);
         if Taille(Cache.Liste) > Cache.Taille_Max then
-            if Politique = To_Unbounded_String("LRU") or Politique = To_Unbounded_Sring("FIFO") then
+            if Politique = To_Unbounded_String("LRU") or Politique = To_Unbounded_String("FIFO") then
                 Supprimer_Tete(Cache.Liste);
             elsif Politique = To_Unbounded_String("LFU") then
-                Element_Index(Cache.Liste, 1, Min_Dest, Cellule);
-                Min := Cellule.Nb_Appels_Adresse;
+                Element_Index(Cache.Liste, 1, Min_Dest, Min_Cellule);
+                Min := Min_Cellule.Nb_Appels_Adresse;
                 for i in 2..Taille(Cache.Liste) loop
-                    Element_Index(Cache.Liste, i, Min_Dest, Cellule);
-                    if Cellule.Nb_Appels_Adresse < Min then
-                        Min := Cellule.Nb_Appels_Adresse;
-                        Min_Dest := Min_Dest;
+                    Element_Index(Cache.Liste, i, Dest, Min_Cellule);
+                    if Min_Cellule.Nb_Appels_Adresse < Min then
+                        Min := Min_Cellule.Nb_Appels_Adresse;
+                        Min_Dest := Dest;
                     end if;
                 end loop;
                 Supprimer(Cache.Liste, Min_Dest);
@@ -99,6 +97,20 @@ package body Cache_LL is
         else
             null;
         end if;
+    end;
+
+    
+    -- Tests
+
+    function Taille (Cache : in T_Cache) return Integer is
+    begin
+        return Taille(Cache.Liste);
+    end;
+
+
+    function Est_Vide (Cache : in T_Cache) return Boolean is
+    begin
+        return Est_Vide(Cache.Liste);
     end;
 
 end Cache_LL;

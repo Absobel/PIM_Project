@@ -56,7 +56,9 @@ package LCA is
 	procedure Supprimer_Tete (Sda : in out T_LCA) with
 		Post =>  Taille (Sda) = Taille (Sda)'Old - 1; -- un �l�ment de moins
 
-	
+	procedure Element_Index (Sda : in T_LCA; Index : in Integer; Cle : out T_Cle; Donnee : out T_Donnee) with
+		Post => Cle_Presente (Sda, Cle) and La_Donnee (Sda, Cle) = Donnee;	
+
 
 	-- Appliquer un traitement (Traiter) pour chaque couple d'une Sda.
 	generic

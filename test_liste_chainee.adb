@@ -16,6 +16,8 @@ procedure test_liste_chainee is
     procedure Afficher_Liste is new Pour_Chaque(Afficher);
 
     Liste : T_LCA;
+    Cle : Integer;
+    Valeur : Integer;
 begin
     Initialiser(Liste);
     -- {}
@@ -51,6 +53,11 @@ begin
     pragma assert(Cle_Presente(Liste, 0));
     pragma assert(not Cle_Presente(Liste, 2));
     Put_Line("Est dans : OK");
+
+    Element_Index(Liste, 1, Cle, Valeur);
+    pragma assert(Cle = -10);
+    pragma assert(Valeur = 364);
+    Put_Line("Element_Index : OK");
 
     Supprimer_Tete(Liste);
     -- {-10:364}

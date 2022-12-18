@@ -1,6 +1,7 @@
 with Ada.Strings;                 use Ada.Strings;
 with LCA;
 with adresseIP;                   use adresseIP;
+with Ada.Strings.Unbounded;       use Ada.Strings.Unbounded;
 
 package Cache_LL is
 
@@ -13,8 +14,8 @@ package Cache_LL is
     procedure Initialiser (Cache : in out T_Cache; Taille_Max : Integer);
     procedure Afficher_Statistiques (Cache : in T_Cache);
     procedure Afficher (Cache : in T_Cache);
-    procedure Lire (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : out String; A_Trouve : out Boolean);
-    procedure Ajouter (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in String; Politique : in String);
+    procedure Lire (Cache : in out T_Cache; Destination : in T_AdresseIP; Politique : Unbounded_String ; DestInterface : out String; A_Trouve : out Boolean);
+    procedure Ajouter (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in String; Politique : in Unbounded_String);
 
 private
 

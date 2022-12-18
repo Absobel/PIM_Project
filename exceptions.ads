@@ -3,4 +3,6 @@ package exceptions is
     Liste_Vide_Exception : exception;
     CommandeInvalide : exception;
     ErreurFormat : exception;
+    PolitiqueInvalide : exception;
+    IndexOutofRange : exception;
 end exceptions;

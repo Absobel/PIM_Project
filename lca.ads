@@ -25,11 +25,16 @@ package LCA is
 			and (Taille'Result = 0) = Est_Vide (Sda);
 
 
-	-- Enregistrer une Donn�e associ�e � une Cl� dans une Sda.
-	-- Si la cl� est d�j� pr�sente dans la Sda, sa donn�e est chang�e.
+	-- Enregistrer une Donn�e associ�e � une Cl� à la fin d'une Sda.
 	procedure Ajouter_Fin (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) with
 		Post => La_Donnee (Sda, Cle) = Donnee
 			and Taille (Sda) = Taille (Sda)'Old + 1; -- un �l�ment de plus
+
+	-- Mise � jour de la donn�e associ�e � une Cl� dans une Sda.
+	-- Exception : Cle_Absente_Exception si Cl� n'est pas utilis�e dans la Sda
+	procedure Mise_A_Jour (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) with
+		Post => La_Donnee (Sda, Cle) = Donnee
+			and Taille (Sda) = Taille (Sda)'Old; -- pas de changement de taille
 
 	-- Supprimer la Donn�e associ�e � une Cl� dans une Sda.
 	-- Exception : Cle_Absente_Exception si Cl� n'est pas utilis�e dans la Sda

@@ -41,6 +41,18 @@ package body LCA is
 	end Ajouter_Fin;
 
 
+	procedure Mise_A_Jour (Sda : in out T_LCA ; Cle : in T_Cle ; Donnee : in T_Donnee) is
+	begin
+		if Sda = null then
+			raise Cle_Absente_Exception;
+		elsif Sda.All.Cle = Cle then
+			Sda.All.Donnee := Donnee;
+		else
+			Mise_A_Jour(Sda.All.Suivant, Cle, Donnee);
+		end if;
+	end Mise_A_Jour;
+
+
 	function Cle_Presente (Sda : in T_LCA ; Cle : in T_Cle) return Boolean is
 	begin
 		if Sda = null then
@@ -101,21 +113,20 @@ package body LCA is
 		end if;
 	end Supprimer_Tete;
 
+
 	procedure Element_Index (Sda : in T_LCA; Index : in Integer; Cle : out T_Cle; Donnee : out T_Donnee) is
 		Aux : T_LCA := Sda;
 		Compteur : Integer := 0;
 	begin
-		while Compteur /= Index loop
-			if Aux = null then
-				raise IndexOutofRange;
-			else
-				Aux := Aux.All.Suivant;
-				Compteur := Compteur + 1;
-			end if;
+		while Compteur < Index loop
+			Aux := Aux.All.Suivant;
+			Compteur := Compteur + 1;
 		end loop;
+
 		Cle := Aux.All.Cle;
 		Donnee := Aux.All.Donnee;
 	end Element_Index;
+
 
 	procedure Pour_Chaque (Sda : in T_LCA) is
 		Aux: T_LCA := Sda;

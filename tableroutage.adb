@@ -2,6 +2,7 @@ with Ada.Integer_Text_IO;       use Ada.Integer_Text_IO;
 
 package body TableRoutage is
 
+
     procedure Afficher_Table (Table : T_LCA ; Numero_Ligne : Integer) is
 
         procedure Afficher_Ligne (Cle : T_AdresseIP  ; Donnee : T_Donnee) is

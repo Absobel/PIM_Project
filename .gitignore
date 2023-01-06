@@ -7,3 +7,6 @@
 # Compiled Dynamic Object files
 *.dyo
 b~~*
+
+# Cache de pdflatex
+fichiers_useless

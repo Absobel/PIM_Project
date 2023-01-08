@@ -82,9 +82,9 @@ package body arbre is
         Supprimer_Par_Cle(Arbre , Cle);
     end Supprimer;
 
-    procedure Traiter(Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in out T_LA) is
+    procedure Lire(Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in out T_LA) is
 
-        procedure Traiter_Recursif(Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in T_LA) is
+        procedure Lire_Recursif(Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in T_LA) is
             Bit : T_AdresseIP;
 
             procedure Comparer_Donnees(Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in T_LA) is
@@ -104,76 +104,96 @@ package body arbre is
             if Arbre = Null then
                 Valeur := To_Unbounded_String("Introuvable");
                 A_Trouve := False;
-            else if Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
+            elsif Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
                 Comparer_Donnees(Courant , Cle , Valeur , A_Trouve , Arbre);
             else
                 Bit := Cle / 2**31;
                 if Bit = 1 then
-                    Traiter_Recursif(Courant , Cle * 2 , Valeur , A_Trouve , Arbre.All.Droite);
+                    Lire_Recursif(Courant , Cle * 2 , Valeur , A_Trouve , Arbre.All.Droite);
                 else
-                    Traiter_Recursif(Courant , Cle * 2 , Valeur , A_Trouve , Arbre.All.Gauche);
-                end if;
-                    Null;
+                    Lire_Recursif(Courant , Cle * 2 , Valeur , A_Trouve , Arbre.All.Gauche);
                 end if;
             end if;
-        end Traiter_Recursif;
+        end Lire_Recursif;
 
     begin
         if Arbre = Null then
             Valeur := To_Unbounded_String("Arbre vide");
             A_Trouve := False;
         else
-            Traiter_Recursif(Courant , Cle , Valeur , A_Trouve , Arbre);
+            Lire_Recursif(Courant , Cle , Valeur , A_Trouve , Arbre);
         end if;
-    end Traiter;
+    end Lire;
 
     procedure Enregistrer(Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : in Unbounded_String ; Arbre : in out T_LA) is
-        Bit : T_AdresseIP;
+        Bit_Noeud : T_AdresseIP;
+        Bit_Cle : T_AdresseIP;
         Copie : T_LA;
     begin
         if Arbre = Null then
             Arbre := new T_Noeud'(Cle, Valeur, Courant, null, null);
-        else if Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
-            Bit := Arbre.All.Cle / 2**31;
-            Copie := Arbre;
-            Arbre := new T_Noeud'(0, To_Unbounded_String("Invalide"), 0, null, null);
-            if Bit = 1 then
-                Arbre.All.Droite := Copie;
+        elsif Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
+            Bit_Noeud := Arbre.All.Cle / 2**31;
+            Bit_Cle := Cle / 2**31;
+            if Bit_Noeud = Bit_Cle then
+                Copie := Arbre;
+                Arbre := new T_Noeud'(0, To_Unbounded_String("Invalide"), 0, null, null);
+                if Bit_Noeud = 1 then
+                    Arbre.All.Droite := New T_Noeud'(Copie.All.Cle*2, Copie.All.Valeur, Copie.All.Consultation, null, null);
+                    Enregistrer(Courant , Cle*2 , Valeur , Arbre.All.Droite);
+                else
+                    Arbre.All.Gauche := New T_Noeud'(Copie.All.Cle*2, Copie.All.Valeur, Copie.All.Consultation, null, null);
+                    Enregistrer(Courant , Cle*2 , Valeur , Arbre.All.Gauche);
+                end if;
+                Free(Copie);
             else
-                Arbre.All.Gauche := Copie;
+                if Bit_Cle = 1 then
+                    Arbre.All.Droite := new T_Noeud'(Cle*2, Valeur, Courant, null, null);
+                    Arbre.All.Gauche := new T_Noeud'(Arbre.All.Cle*2, Arbre.All.Valeur, Arbre.All.Consultation, null, null);
+                else
+                    Arbre.All.Gauche := new T_Noeud'(Cle*2, Valeur, Courant, null, null);
+                    Arbre.All.Droite := new T_Noeud'(Arbre.All.Cle*2, Arbre.All.Valeur, Arbre.All.Consultation, null, null);
+                end if;
             end if;
         else
-            Bit := Cle / 2**31;
-            if Bit = 1 then
+            Bit_Cle := Cle / 2**31;
+            Copie := Arbre;
+            Arbre := new T_Noeud'(0, To_Unbounded_String("Invalide"), 0, null, null);
+            if Bit_Cle = 1 then
                 Enregistrer(Courant , Cle * 2 , Valeur , Arbre.All.Droite);
             else
                 Enregistrer(Courant , Cle * 2 , Valeur , Arbre.All.Gauche);
             end if;
-        end if;
+            Free(Copie);
         end if;
     end Enregistrer;
 
     procedure Afficher(arbre : in T_LA) is
         procedure Afficher_Recursif(Arbre : in T_LA; Chemin : in T_AdresseIP; Profondeur : in Integer) is
-            Bit : T_AdresseIP;
         begin
             if Arbre = Null then
                 Null;
-            else if Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
-               AfficherAdresseIP(Chemin * 2**profondeur + Arbre.All.Cle / 2**profondeur);
+            elsif Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
+               AfficherAdresseIP(Chemin + Arbre.All.Cle / 2**profondeur);
                Put_Line(" " & To_String(Arbre.All.Valeur));
             else
-                Bit := Arbre.All.Cle / 2**31;
-                if Bit = 1 then
-                    Afficher_Recursif(Arbre.All.Droite , Chemin + 2**(31-profondeur) , Profondeur + 1);
-                else
-                    Afficher_Recursif(Arbre.All.Gauche , Chemin , Profondeur + 1);
-                end if;
-            end if;
+                Afficher_Recursif(Arbre.All.Droite , Chemin + 2**(31-profondeur) , Profondeur + 1);
+                Afficher_Recursif(Arbre.All.Gauche , Chemin , Profondeur + 1);
             end if;
         end Afficher_Recursif;
     begin
         Afficher_Recursif(Arbre , 0 , 0);
     end Afficher;
+
+    procedure Vider(Arbre : in out T_LA) is
+    begin
+        if Arbre = Null then
+            Null;
+        else
+            Vider(Arbre.All.Gauche);
+            Vider(Arbre.All.Droite);
+            Free(Arbre);
+        end if;
+    end Vider;
 
 end arbre;

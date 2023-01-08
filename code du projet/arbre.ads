@@ -17,7 +17,7 @@ package arbre is
 
 
  -- tariter une adresse.
- Procedure Traiter (Courant : in Integer ; Cle : in T_AdresseIP  ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in out T_LA);
+ Procedure Lire (Courant : in Integer ; Cle : in T_AdresseIP  ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in out T_LA);
 
 
  --Enregistrer une cle dans l'arbre.
@@ -26,6 +26,8 @@ package arbre is
 
  --Afficher l'arbre.
  Procedure Afficher (arbre : in T_LA);
+
+ procedure vider (arbre : in out T_LA);
 
 
 private

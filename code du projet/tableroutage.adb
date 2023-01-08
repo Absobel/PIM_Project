@@ -24,17 +24,15 @@ package body TableRoutage is
     end Afficher_Table;
 
 
-    function Comparer_table(Table : T_LCA ; Adresse : T_AdresseIP) return Unbounded_String is
+    procedure Comparer_table(Table : in T_LCA ; Adresse : in T_AdresseIP ; Destination : out Unbounded_String ; Masque : out T_AdresseIP) is
         Adresse_Masquee : T_AdresseIP;
-        Masque_Max : T_AdresseIP := 0;
-        Interface_Sortie : Unbounded_String := To_Unbounded_String("Erreur routage");
 
         procedure Comparer_Ligne(Cle : T_AdresseIP ; Donnee : T_Donnee) is
         begin
             Adresse_Masquee := Adresse and Donnee.Masque;
-            if Adresse_Masquee = Cle and Donnee.Masque >= Masque_Max then
-                Masque_Max := Donnee.Masque;
-                Interface_Sortie := Donnee.Destination;
+            if Adresse_Masquee = Cle and Donnee.Masque >= Masque then
+                Masque := Donnee.Masque;
+                Destination := Donnee.Destination;
             end if;
         end Comparer_Ligne;
 
@@ -42,8 +40,9 @@ package body TableRoutage is
 
     begin
 
+        Masque := 0;
+        Destination := To_Unbounded_String("Impossible de trouver dans la table");
         Parcourir_Table(Table);
-        return Interface_Sortie;
 
     end Comparer_table;
 
@@ -69,5 +68,10 @@ package body TableRoutage is
             Put ("Blancs en surplus à la fin du fichier.");
             null;
     end Initialiser_Table;
+
+    procedure Vider_Table (Table : in out T_LCA) is
+    begin
+        Vider(Table);
+    end Vider_Table;
 
 end TableRoutage;

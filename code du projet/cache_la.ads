@@ -12,7 +12,11 @@ package cache_la is
 
     procedure Lire(cache : in out T_Cache ; Adresse : in T_AdresseIP ; Destination : out Unbounded_String ; A_Trouve : out Boolean);
 
-    procedure Afficher(Cache : in T_Cache);
+    procedure Enregistrer(Cache : in out T_Cache ; Adresse : in T_AdresseIP ; Masque : in T_AdresseIP ; Destination : in Unbounded_String);
+
+    procedure Afficher(Cache : in T_Cache ; Ligne : in Integer);
+
+    procedure Vider(Cache : in out T_Cache);
 
 private
 

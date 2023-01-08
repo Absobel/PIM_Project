@@ -6,11 +6,13 @@ with Ada.Text_IO.Unbounded_IO;  use Ada.Text_IO.Unbounded_IO;
 with Ada.Exceptions;            use Ada.Exceptions;	-- pour Exception_Messagebounded_IO;
 with adresseIP;                 use adresseIP;
 with TableRoutage;              use TableRoutage;
+with exceptions;               use exceptions;
+with cache_la;                  use cache_la;
 with ligne_de_commande;
 
 
 
-procedure routeur_simple is
+procedure routeur_la is
 
 
     --traiter les commandes du fichier de paquetage
@@ -32,7 +34,11 @@ procedure routeur_simple is
     Numero_Ligne: Integer;
     Table: Liste_Table.T_LCA;
     adresse: T_AdresseIP;
+    Masque : T_AdresseIP;
     A_Fini: Boolean;
+    A_Trouve: Boolean;
+    Destination : Unbounded_string;
+    cache : T_Cache;
 
 
 begin
@@ -51,6 +57,11 @@ begin
     Initialiser_Table(Table, Fichier_Table);
     close(Fichier_Table);
 
+    -- On initialise le cache
+
+    Initialiser(Cache, Taille_Cache);
+
+
     A_Fini := False;
 
     while not End_Of_File(Fichier_paquets) and then not A_Fini loop
@@ -59,10 +70,16 @@ begin
 
             -- On lit la ligne et on la traite comme une adresse IP (comparaison à la table, enregistrement dans le fichier résultats).
 
+
             Numero_ligne:=Integer(Line(Fichier_paquets));
             Adresse := TransformerAdresseIP(Fichier_paquets);
             EnregistrerAdresse(Fichier_resultats, Adresse);
-            Put(Fichier_resultats, Comparer_Table(Table, Adresse));
+            Lire(Cache, Adresse, Destination, A_Trouve);
+            if not A_trouve then
+                Comparer_Table(Table, Adresse, Destination, Masque);
+                Enregistrer(Cache, Adresse, Masque, Destination);
+            end if;
+            Put(Fichier_resultats, Destination);
             New_Line(Fichier_resultats);
             Skip_Line(Fichier_paquets);
 
@@ -77,7 +94,9 @@ begin
 
                 elsif commande="fin" then   -- la commande "fin" permet de terminer le programme.
                     A_Fini := True;
-                    A_Fini:= true;
+
+                elsif commande="cache" then -- la commande "cache" permet d'afficher le contenu du cache.
+                    Afficher(Cache, Numero_Ligne);
 
                 else    -- Si la commande n'est pas reconnue, on affiche un message et on continue.
                     Put_Line("Commande inconnue à la ligne " & Integer'Image(Numero_ligne));
@@ -91,12 +110,26 @@ begin
 
         end;
     end loop;
+
+    if Afficher_Statistiques then
+        Statistiques(Cache);
+    end if;
+
+    Vider_Table(Table);
+    Vider(Cache);
     close(Fichier_resultats);
     close(Fichier_paquets);
-    Vider_Table(Table);
     put("Fin du programme");
 
 exception
+
+    when CommandeInvalide =>
+
+        -- L'erreur a lieu avant d'initialiser quoi que ce soit (pas besoin de vider le cache ou la table).
+
+        Put_Line("Erreur dans la ligne de commande.");
+        Usage;
+        raise;
 
     when E : others =>
 
@@ -112,8 +145,7 @@ exception
         Put_Line("Erreur (placeholder)");
         Put_Line("Erreur : " & Exception_Message(E));
         Vider_Table(Table);
-        close(Fichier_resultats);
-        close(Fichier_paquets);
+        Vider(Cache);
         Put_Line("Fin du programme");
 
-end routeur_simple;
+end routeur_la;

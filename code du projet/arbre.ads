@@ -1,6 +1,8 @@
-with adresseip ;  use adresseip;
-with Ada.Strings.Unbounded;   use Ada.Strings.Unbounded;
+with adresseip; use adresseip;
 
+generic
+    type T_Valeur is private;
+    ValeurParDefaut : T_Valeur;
 package arbre is
 
    type T_LA is limited private;
@@ -12,22 +14,30 @@ package arbre is
  --Obtenir la taille de l'arbre
  function taille (arbre : in T_LA) return integer;
 
+ -- Suuprime un élément à partir de sa clé
+ Procedure Supprimer (Cle : in T_AdresseIP ; Arbre : in out T_LA);
 
- Procedure Supprimer (Courant : in Integer ; Arbre : in out T_LA);
 
-
- -- tariter une adresse.
- Procedure Lire (Courant : in Integer ; Cle : in T_AdresseIP  ; Valeur : out Unbounded_String ; A_Trouve : out Boolean ; Arbre : in out T_LA);
+ -- Lire une adresse dans l'arbre.
+ Procedure Lire (Cle : in T_AdresseIP  ; Valeur : out T_Valeur ; A_Trouve : out Boolean ; Arbre : in out T_LA);
 
 
  --Enregistrer une cle dans l'arbre.
- Procedure Enregistrer (Courant : in Integer ; Cle : in T_AdresseIP ; Valeur : in Unbounded_String ; Arbre : in out T_LA);
+ Procedure Enregistrer (Cle : in T_AdresseIP ; Valeur : in T_Valeur ; Arbre : in out T_LA);
 
 
- --Afficher l'arbre.
+ --Afficher l'arbre selon la procédure AfficherNoeud.
+ generic
+    with procedure AfficherNoeud (Cle : in T_AdresseIP ; Valeur : in T_Valeur);
  Procedure Afficher (arbre : in T_LA);
 
- procedure vider (arbre : in out T_LA);
+ -- Vider l'arbre.
+ procedure Vider (arbre : in out T_LA);
+
+ -- Applique Traiter à chaque noeud de l'arbre.
+ generic
+    with procedure Traiter(Cle: in T_AdresseIP ; Valeur: in T_Valeur);
+ procedure PourChaque(Arbre : in T_LA);
 
 
 private
@@ -39,8 +49,7 @@ private
  type T_Noeud is
     record
         Cle : T_AdresseIP ;
-        Valeur: Unbounded_String;
-        Consultation : Integer;
+        Valeur: T_Valeur;
         Gauche : T_LA ;   -- fils gauche.
         Droite : T_LA ;  -- fils droit
  end record;

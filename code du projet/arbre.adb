@@ -59,24 +59,13 @@ package body arbre is
         procedure Lire_Recursif(Cle : in T_AdresseIP ; Valeur : out T_Valeur ; A_Trouve : out Boolean ; Arbre : in T_LA) is
             Bit : T_AdresseIP;
 
-            procedure Comparer_Donnees(Cle : in T_AdresseIP ; Valeur : out T_Valeur ; A_Trouve : out Boolean ; Arbre : in T_LA) is
-            begin
-                if Arbre.All.Cle = Cle then
-                    Valeur := Arbre.All.Valeur;
-                    A_Trouve := True;
-                else
-                    Valeur := ValeurParDefaut;
-                    A_Trouve := False;
-                end if;
-            end Comparer_Donnees;
-
-
         begin
             if Arbre = Null then
                 Valeur := ValeurParDefaut;
                 A_Trouve := False;
             elsif Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
-                Comparer_Donnees(Cle , Valeur , A_Trouve , Arbre);
+                Valeur := Arbre.All.Valeur;
+                A_Trouve := True;
             else
                 Bit := Cle / 2**31;
                 if Bit = 1 then
@@ -99,47 +88,43 @@ package body arbre is
     procedure Enregistrer(Cle : in T_AdresseIP ; Valeur : in T_Valeur ; Arbre : in out T_LA) is
         Bit_Noeud : T_AdresseIP;
         BiT_AdresseIP : T_AdresseIP;
-        Copie : T_LA;
+        CopieCle : T_AdresseIP;
+        CopieValeur : T_Valeur;
     begin
         if Arbre = Null then
             Arbre := new T_Noeud'(Cle, Valeur, null, null);
+
         elsif Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
+
             if Cle = Arbre.All.Cle Then
                 Arbre.All.Valeur := Valeur;
+
             else
+
                 Bit_Noeud := Arbre.All.Cle / 2**31;
                 BiT_AdresseIP := Cle / 2**31;
-                if Bit_Noeud = BiT_AdresseIP then
-                    Copie := Arbre;
-                    Arbre := new T_Noeud'(0, ValeurParDefaut, null, null);
-                    if Bit_Noeud = 1 then
-                        Arbre.All.Droite := New T_Noeud'(Copie.All.Cle*2, Copie.All.Valeur, null, null);
-                        Enregistrer(Cle*2 , Valeur , Arbre.All.Droite);
-                    else
-                        Arbre.All.Gauche := New T_Noeud'(Copie.All.Cle*2, Copie.All.Valeur, null, null);
-                        Enregistrer(Cle*2 , Valeur , Arbre.All.Gauche);
-                    end if;
-                    Free(Copie);
+
+                CopieCle := Arbre.All.Cle;
+                CopieValeur := Arbre.All.Valeur;
+                Arbre := new T_Noeud'(0, ValeurParDefaut, null, null);
+
+                if Bit_Noeud = 1 then
+                    Arbre.All.Droite := New T_Noeud'(CopieCle*2, CopieValeur, null, null);
+                    Enregistrer(Cle , Valeur , Arbre);
+
                 else
-                    if BiT_AdresseIP = 1 then
-                        Arbre.All.Droite := new T_Noeud'(Cle*2, Valeur, null, null);
-                        Arbre.All.Gauche := new T_Noeud'(Arbre.All.Cle*2, Arbre.All.Valeur, null, null);
-                    else
-                        Arbre.All.Gauche := new T_Noeud'(Cle*2, Valeur, null, null);
-                        Arbre.All.Droite := new T_Noeud'(Arbre.All.Cle*2, Arbre.All.Valeur, null, null);
-                    end if;
+                    Arbre.All.Gauche := New T_Noeud'(CopieCle*2, CopieValeur, null, null);
+                    Enregistrer(Cle , Valeur , Arbre);
                 end if;
+
             end if;
         else
             BiT_AdresseIP := Cle / 2**31;
-            Copie := Arbre;
-            Arbre := new T_Noeud'(0, ValeurParDefaut, null, null);
             if BiT_AdresseIP = 1 then
                 Enregistrer(Cle * 2 , Valeur , Arbre.All.Droite);
             else
                 Enregistrer(Cle * 2 , Valeur , Arbre.All.Gauche);
             end if;
-            Free(Copie);
         end if;
     end Enregistrer;
 
@@ -149,7 +134,6 @@ package body arbre is
             if Arbre = Null then
                 Null;
             elsif Arbre.All.Droite = Null and Arbre.All.Gauche = Null then
-                Put_Line("wtf");
                 AfficherNoeud(Chemin + Arbre.All.Cle/2**Profondeur, Arbre.All.Valeur);
             else
                 Afficher_Recursif(Arbre.All.Droite , Chemin + 2**(31-profondeur) , Profondeur + 1);

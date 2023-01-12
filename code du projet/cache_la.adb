@@ -18,7 +18,11 @@ package body cache_la is
     begin
         Put_Line("Taille du cache : " & Integer'Image(Cache.Taille));
         Put_Line("Nombre de demandes de routes : " & Integer'Image(Cache.Consultation));
-        Taux_Defauts := Float(Cache.Defauts) / Float(Cache.Consultation);
+        if Cache.Defauts = 0 then
+            Taux_Defauts := 0.0;
+        else
+            Taux_Defauts := Float(Cache.Defauts) / Float(Cache.Consultation);
+        end if;
         Put_Line("Taux de défauts de cache : " & Float'Image(Taux_Defauts));
     end Statistiques;
 
@@ -65,14 +69,14 @@ package body cache_la is
             end if;
         end TraiterMinimumFrequence;
 
-        procedure LRU is new PourChaque(Traiter => TraiterMinimumConsultation);
+        procedure LRU_FIFO is new PourChaque(Traiter => TraiterMinimumConsultation);
 
         procedure LFU is new PourChaque(Traiter => TraiterMinimumFrequence);
 
     begin
         if Cache.Taille = Cache.Taille_Max then
-            if To_String(Cache.Politique) = "LRU" then
-                LRU(Cache.Arbre);
+            if To_String(Cache.Politique) = "LRU" or to_String(Cache.Politique) = "FIFO" then
+                LRU_FIFO(Cache.Arbre);
             elsif To_String(Cache.Politique) = "LFU" then
                 LFU(Cache.Arbre);
             else
@@ -88,19 +92,23 @@ package body cache_la is
 
     procedure Afficher(Cache : in T_Cache ; Ligne : in Integer) is
 
-        procedure AfficherNoeud(Cle : in T_AdresseIP ; Noeud : in T_Noeud) is
+        procedure AfficherDestination(Cle : in T_AdresseIP ; Noeud : in T_Noeud) is
         begin
             AfficherAdresseIP(Cle);
             Put(" ");
             Put(To_String(Noeud.Destination));
             New_Line;
-        end AfficherNoeud;
+        end AfficherDestination;
 
-        procedure AfficherArbre is new PourChaque(Traiter => AfficherNoeud);
+        procedure AfficherArbre is new arbre_cache.Afficher(AfficherNoeud => AfficherDestination);
 
     begin
-        Put_Line("cache (ligne " & Integer'Image(Ligne) & ")");
-        AfficherArbre(Cache.Arbre);
+        if Cache.Taille = 0 then
+            Put_Line("Le cache est vide");
+        else
+            Put_Line("cache (ligne " & Integer'Image(Ligne) & ")");
+            AfficherArbre(Cache.Arbre);
+        end if;
     end Afficher;
 
     procedure Vider(Cache : in out T_Cache) is

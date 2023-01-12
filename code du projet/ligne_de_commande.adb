@@ -6,7 +6,7 @@ package body ligne_de_commande is
 
     procedure Usage is
     begin
-        Put_Line("Usage: ./routeur_simple <options>");
+        Put_Line("Usage: ./routeur_ll <options> | ./routeur_la <options>");
         Put_Line("Options:");
         Put_Line("  -c <taille> : Définir la taille du cache. La valeur 0 indique qu'il n y a pas de cache. La valeur par défaut est 10.");
         Put_Line("  -p FIFO|LRU|LFU : Définir la politique utilisée par le cache. La valeur par défaut est FIFO.");

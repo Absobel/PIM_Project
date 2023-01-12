@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{hyperref}
 \usepackage{listings}
-\usepackage[left=1cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm]{geometry}
 
 \title{%
   Manuel Utilisateur \\
@@ -35,7 +35,7 @@ Ce manuel a pour objectif de guider l'utilisateur dans l'utilisation de ce produ
 \end{enumerate}
 
 \section{Fonctionnement}
-Le produit est conçu pour stocker et exploiter des tables de routage pour acheminer des paquets de données. Il utilise un cache pour stocker les routes les plus utilisées afin d'optimiser les performances. Il utilise également une politique de remplacement (FIFO, LRU ou LFU) pour gérer les routes dans le cache. L'utilisateur peut également personnaliser la taille du cache et les fichiers utilisés pour les paquets, les routes et les résultats. Les statistiques de performance peuvent également être affichées pour surveiller l'utilisation du produit.
+Le produit est conçu pour stocker et exploiter des tables de routage pour acheminer des paquets de données. Il utilise un cache pour stocker les routes les plus utilisées afin d'optimiser les performances. Il utilise également une politique de remplacement, First In First Out (FIFO), Last Recently Used (LRU) ou Last Frequently Used (LRU) pour gérer les routes dans le cache. L'utilisateur peut également personnaliser la taille du cache et les fichiers utilisés pour les paquets, les routes et les résultats. Les statistiques de performance peuvent également être affichées pour surveiller l'utilisation du produit.
 
 \section{Usage}
 \subsection{Usage Classique}

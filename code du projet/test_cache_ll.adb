@@ -19,14 +19,14 @@ begin
     New_Line;
     Put_Line("### Test LRU (taille max : 2) et fonctions de base ###"); New_Line;
 
-    Ajouter(Cache, 0, To_Unbounded_String("eth0"), To_Unbounded_String("LRU"));
+    Enregistrer(Cache, 0, To_Unbounded_String("eth0"), To_Unbounded_String("LRU"));
     -- 0.0.0.0 : eth0
     Put_Line("Attendu après ajour de 0.0.0.0 :");
     Put_Line("0.0.0.0 - eth0");
     Put_Line("Obtenu :");
     Afficher(Cache, To_Unbounded_String("LRU")); New_Line;
 
-    Ajouter(Cache, 1, To_Unbounded_String("eth1"), To_Unbounded_String("LRU"));
+    Enregistrer(Cache, 1, To_Unbounded_String("eth1"), To_Unbounded_String("LRU"));
     -- 0.0.0.0 : eth0
     -- 0.0.0.1 : eth1
     Put_Line("Attendu après ajour de 0.0.0.1 :");
@@ -34,7 +34,7 @@ begin
     Put_Line("0.0.0.1 : eth1");
     Put_Line("Obtenu :");
     Afficher(Cache, To_Unbounded_String("LRU")); New_Line;
-    Put_Line("Ajouter : OK"); New_Line;
+    Put_Line("Enregistrer : OK"); New_Line;
 
     Lire(Cache, 0, To_Unbounded_String("LRU"), DestInterface, A_Trouve);
     -- 0.0.0.1 : eth1
@@ -53,7 +53,7 @@ begin
     Afficher(Cache, To_Unbounded_String("LRU")); New_Line;
     Put_Line("Lire : OK"); New_Line;
 
-    Ajouter(Cache, 2, To_Unbounded_String("eth2"), To_Unbounded_String("LRU"));
+    Enregistrer(Cache, 2, To_Unbounded_String("eth2"), To_Unbounded_String("LRU"));
     -- 0.0.0.0 : eth0
     -- 0.0.0.2 : eth2
     Put_Line("Attendu après ajout de 0.0.0.2 alors que cache plein :");
@@ -76,9 +76,9 @@ begin
     Put_Line("### Test FIFO (taille max : 3) ###"); New_Line;
 
     Initialiser(Cache, 3);
-    Ajouter(Cache, 0, To_Unbounded_String("eth0"), To_Unbounded_String("FIFO"));
-    Ajouter(Cache, 1, To_Unbounded_String("eth1"), To_Unbounded_String("FIFO"));
-    Ajouter(Cache, 2, To_Unbounded_String("eth2"), To_Unbounded_String("FIFO"));
+    Enregistrer(Cache, 0, To_Unbounded_String("eth0"), To_Unbounded_String("FIFO"));
+    Enregistrer(Cache, 1, To_Unbounded_String("eth1"), To_Unbounded_String("FIFO"));
+    Enregistrer(Cache, 2, To_Unbounded_String("eth2"), To_Unbounded_String("FIFO"));
     -- 0.0.0.0 : eth0
     -- 0.0.0.1 : eth1
     -- 0.0.0.2 : eth2
@@ -92,7 +92,7 @@ begin
     Put_Line("Obtenu :");
     Afficher(Cache, To_Unbounded_String("FIFO")); New_Line;
 
-    Ajouter(Cache, 3, To_Unbounded_String("eth3"), To_Unbounded_String("FIFO"));
+    Enregistrer(Cache, 3, To_Unbounded_String("eth3"), To_Unbounded_String("FIFO"));
     -- 0.0.0.1 : eth1
     -- 0.0.0.2 : eth2
     -- 0.0.0.3 : eth3
@@ -108,9 +108,9 @@ begin
     Put_Line("### Test LFU (taille max : 3) ###"); New_Line;
 
     Initialiser(Cache, 3);
-    Ajouter(Cache, 0, To_Unbounded_String("eth0"), To_Unbounded_String("LFU"));
-    Ajouter(Cache, 1, To_Unbounded_String("eth1"), To_Unbounded_String("LFU"));
-    Ajouter(Cache, 2, To_Unbounded_String("eth2"), To_Unbounded_String("LFU"));
+    Enregistrer(Cache, 0, To_Unbounded_String("eth0"), To_Unbounded_String("LFU"));
+    Enregistrer(Cache, 1, To_Unbounded_String("eth1"), To_Unbounded_String("LFU"));
+    Enregistrer(Cache, 2, To_Unbounded_String("eth2"), To_Unbounded_String("LFU"));
     -- 0.0.0.0 : eth0 - 0
     -- 0.0.0.1 : eth1 - 0
     -- 0.0.0.2 : eth2 - 0
@@ -130,7 +130,7 @@ begin
     Put_Line("Obtenu :");
     Afficher(Cache, To_Unbounded_String("LFU")); New_Line;
 
-    Ajouter(Cache, 3, To_Unbounded_String("eth3"), To_Unbounded_String("LFU"));
+    Enregistrer(Cache, 3, To_Unbounded_String("eth3"), To_Unbounded_String("LFU"));
     -- 0.0.0.0 : eth0 - 2
     -- 0.0.0.2 : eth2 - 0
     -- 0.0.0.3 : eth3 - 0
@@ -143,6 +143,8 @@ begin
     Afficher(Cache, To_Unbounded_String("LFU")); New_Line;
 
     Put_Line("Comportement LFU : OK"); New_Line;
+
+    Vider(Cache);
 
     Put_Line("############# Fin des tests ! #############");
 end test_Cache_LL;

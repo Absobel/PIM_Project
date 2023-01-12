@@ -12,7 +12,7 @@ package body Cache_LL is
         Cache.Nb_Defauts := 0;
     end;
 
-    procedure Afficher_Statistiques (Cache : in T_Cache) is
+    procedure Afficher_Stat (Cache : in T_Cache) is
     begin
         Put_Line("Nombre d'appels : " & Integer'Image(Cache.Nb_Appels));
         Put_Line("Nombre de défauts : " & Integer'Image(Cache.Nb_Defauts));
@@ -79,7 +79,7 @@ package body Cache_LL is
     end;
 
 
-    procedure Ajouter (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in Unbounded_String; Politique : in Unbounded_String) is
+    procedure Enregistrer (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in Unbounded_String; Politique : in Unbounded_String) is
         Cellule : constant T_Cellule := T_Cellule'(DestInterface, 0);
         Min_Cellule : T_Cellule;
         Min : Integer;
@@ -115,6 +115,10 @@ package body Cache_LL is
         Cache.Nb_Defauts := Cache.Nb_Defauts + 1;
     end;
 
+    procedure Vider(Cache : in out T_Cache) is
+    begin
+        Vider(Cache.Liste);
+    end;
     
     -- Tests
 

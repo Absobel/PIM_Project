@@ -11,11 +11,12 @@ package Cache_LL is
 
 
     procedure Initialiser (Cache : in out T_Cache; Taille_Max : Integer);
-    procedure Afficher_Statistiques (Cache : in T_Cache);
+    procedure Afficher_Stat (Cache : in T_Cache);
     procedure Afficher (Cache : in T_Cache; Politique : in Unbounded_String);
     procedure Lire (Cache : in out T_Cache; Destination : in T_AdresseIP; Politique : Unbounded_String ; DestInterface : out Unbounded_String; A_Trouve : out Boolean);
-    procedure Ajouter (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in Unbounded_String; Politique : in Unbounded_String);
+    procedure Enregistrer (Cache : in out T_Cache; Destination : in T_AdresseIP; DestInterface : in Unbounded_String; Politique : in Unbounded_String);
     procedure Incrementer_Defauts (Cache : in out T_Cache);
+    procedure Vider(Cache : in out T_Cache);
 
     -- Tests
     function Taille (Cache : in T_Cache) return Integer;

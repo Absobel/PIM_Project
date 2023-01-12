@@ -10,3 +10,7 @@ b~~*
 
 # Cache de pdflatex
 fichiers_useless
+*.aux
+*.log
+rapport.pdf
+code du projet/b~*

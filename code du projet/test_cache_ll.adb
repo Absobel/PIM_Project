@@ -68,7 +68,7 @@ begin
     Put_Line("Nombre de défauts de cache : 1");
     Put_Line("Taux de défauts de cache : 0.5");
     Put_Line("Obtenu :");
-    Afficher_Statistiques(Cache); New_Line;
+    Afficher_Stat(Cache); New_Line;
     Put_Line("Statistiques : OK"); New_Line;
 
     Put_Line("Comportement LRU : OK"); New_Line;

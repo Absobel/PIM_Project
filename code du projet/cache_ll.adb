@@ -56,10 +56,10 @@ package body Cache_LL is
     procedure Lire (Cache : in out T_Cache; Destination : in T_AdresseIP; Politique : Unbounded_String; DestInterface : out Unbounded_String; A_Trouve : out Boolean) is
         Donnee : T_Cellule;
     begin
+        Cache.Nb_Appels := Cache.Nb_Appels + 1;
         if Cle_Presente(Cache.Liste, Destination) then
             Donnee :=  La_Donnee(Cache.Liste, Destination);
             DestInterface := Donnee.DestInterface;
-            Cache.Nb_Appels := Cache.Nb_Appels + 1;
             A_Trouve := true;
             
             if Politique = To_Unbounded_String("LRU") then

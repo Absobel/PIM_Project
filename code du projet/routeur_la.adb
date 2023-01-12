@@ -59,7 +59,7 @@ begin
 
     -- On initialise le cache
 
-    Initialiser(Cache, Taille_Cache);
+    Initialiser(Cache, Taille_Cache, Politique);
 
 
     A_Fini := False;
